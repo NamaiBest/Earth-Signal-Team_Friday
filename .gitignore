@@ -1,0 +1,11 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+data/raw/
+node_modules/
+dist/
+
+# credentials
+.secrets/
+*.env

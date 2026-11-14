@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarthSignal, live today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A0E13}
+a{color:#7FB2EA}a:hover{color:#A9CCF2}
+</style>
+</helmet>
+<div style="min-height: 900px; background: #0A0E13; color: #E6EDF3; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; padding: 14px 28px; border-bottom: 1px solid #1F2933">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="none" stroke="#E6EDF3" stroke-width="1.5"></circle><path d="M3 15 L8 15 L10 9 L13 19 L16 7 L18 15 L23 15" fill="none" stroke="#F0A04B" stroke-width="1.8" stroke-linejoin="round"></path></svg>
+<span style="font-weight: 600; font-size: 18px; letter-spacing: 0.2px">EarthSignal</span>
+</div>
+<nav aria-label="Mode" style="display: flex; background: #11171F; border: 1px solid #1F2933; border-radius: 8px; padding: 3px">
+<a href="Main.dc.html" style="padding: 8px 16px; border-radius: 6px; color: #C5D0DA; text-decoration: none; font-size: 14px">Trends</a>
+<a href="Live.dc.html" style="padding: 8px 16px; border-radius: 6px; background: #E6EDF3; color: #0A0E13; text-decoration: none; font-weight: 600; font-size: 14px">Live today</a>
+</nav>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #A3B0BC">
+<span style="width: 8px; height: 8px; border-radius: 50%; background: #F0A04B"></span>
+<span>NASA satellite imagery · 27 Oct 2026</span>
+</div>
+<div style="flex: 1 1 200px; display: flex; justify-content: flex-end">
+<label for="search2" style="position: absolute; left: -9999px">Search a place</label>
+<input id="search2" placeholder="Search a place, e.g. Delhi" style="width: 260px; max-width: 100%; background: #11171F; color: #E6EDF3; border: 1px solid #2A3642; border-radius: 6px; padding: 9px 12px; font-family: inherit; font-size: 14px">
+</div>
+</header>
+
+<main style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+
+<aside aria-label="Live layers" style="flex: 1 1 300px; max-width: 340px; border-right: 1px solid #1F2933; padding: 22px 20px; display: flex; flex-direction: column; gap: 14px">
+<div>
+<div style="font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: #A3B0BC">Live layers</div>
+<div style="font-size: 13px; color: #8B98A5; margin-top: 6px; line-height: 1.45">Today's satellite view. Switch to Trends to see whether it's part of a real long-term change.</div>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{layers}}" as="l" hint-placeholder-count="9">
+<li>
+<button style="{{l.rowStyle}}">
+<span style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 14px; color: #E6EDF3">{{l.name}}</span>
+<span style="font-size: 12px; color: #8B98A5">{{l.source}}</span>
+</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #A3B0BC; text-align: right">{{l.updated}}</span>
+</button>
+</li>
+</sc-for>
+</ul>
+</aside>
+
+<section aria-label="Globe" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; align-items: center; padding: 22px 24px; gap: 14px">
+<div style="align-self: stretch; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px">
+<div>
+<div style="font-size: 22px; font-weight: 600">Nitrogen dioxide, tropospheric column</div>
+<div style="font-size: 13px; color: #8B98A5; margin-top: 4px">TROPOMI via NASA GIBS · daily · no processing, tiles stream straight onto the globe</div>
+</div>
+</div>
+
+<svg viewBox="0 0 560 560" role="img" aria-label="Globe centred on Asia. Bright orange NO2 hot spots over northern India and eastern China; low values elsewhere." style="width: 100%; max-width: 560px; height: auto">
+<defs>
+<radialGradient id="ocean2" cx="45%" cy="35%" r="70%"><stop offset="0%" stop-color="#14212D"></stop><stop offset="100%" stop-color="#0B1219"></stop></radialGradient>
+<radialGradient id="hot" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F4B266"></stop><stop offset="60%" stop-color="#E07A2E" stop-opacity="0.7"></stop><stop offset="100%" stop-color="#E07A2E" stop-opacity="0"></stop></radialGradient>
+<clipPath id="disc2"><circle cx="280" cy="280" r="250"></circle></clipPath>
+</defs>
+<circle cx="280" cy="280" r="262" fill="none" stroke="#1B2732" stroke-width="10"></circle>
+<circle cx="280" cy="280" r="250" fill="url(#ocean2)" stroke="#2A3642"></circle>
+<g clip-path="url(#disc2)" fill="none" stroke="#1F2C38" stroke-width="1">
+<ellipse cx="280" cy="170" rx="210" ry="60"></ellipse>
+<ellipse cx="280" cy="280" rx="250" ry="78"></ellipse>
+<ellipse cx="280" cy="390" rx="210" ry="60"></ellipse>
+<ellipse cx="280" cy="280" rx="90" ry="250"></ellipse>
+<ellipse cx="280" cy="280" rx="175" ry="250"></ellipse>
+<line x1="280" y1="30" x2="280" y2="530"></line>
+</g>
+<g clip-path="url(#disc2)">
+<ellipse cx="225" cy="255" rx="70" ry="30" fill="url(#hot)"></ellipse>
+<ellipse cx="365" cy="225" rx="60" ry="34" fill="url(#hot)"></ellipse>
+<ellipse cx="410" cy="190" rx="26" ry="18" fill="url(#hot)"></ellipse>
+<ellipse cx="150" cy="215" rx="30" ry="16" fill="url(#hot)" opacity="0.6"></ellipse>
+</g>
+<circle cx="222" cy="252" r="7" fill="#E6EDF3" stroke="#0A0E13" stroke-width="3"></circle>
+</svg>
+
+<div style="align-self: stretch; max-width: 720px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 8px">
+<label for="day" style="font-size: 13px; color: #A3B0BC">Day</label>
+<input id="day" type="range" min="0" max="6" value="6" style="width: 100%; accent-color: #F0A04B">
+<div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8B98A5"><span>21 Oct</span><span>24 Oct</span><span>27 Oct</span></div>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #C5D0DA">
+<span>Low</span>
+<span style="width: 160px; height: 10px; border-radius: 2px; background: linear-gradient(90deg, #14212D, #8C5A2B, #E07A2E, #F7D2A0)"></span>
+<span>High</span>
+</div>
+</section>
+
+<aside aria-label="Selected place" style="flex: 1 1 320px; max-width: 380px; border-left: 1px solid #1F2933; padding: 22px 22px; display: flex; flex-direction: column; gap: 18px">
+<div>
+<div style="font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: #A3B0BC">Selected</div>
+<div style="font-size: 20px; font-weight: 600; margin-top: 6px">Delhi NCR, India</div>
+</div>
+<div style="padding: 16px; background: #11171F; border: 1px solid #1F2933; border-radius: 10px">
+<div style="font-size: 13px; color: #A3B0BC">Today</div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; margin-top: 4px; color: #F4B266">[ value ]</div>
+<div style="font-size: 12px; color: #8B98A5; margin-top: 2px">mol/m² · TROPOMI, 27 Oct 2026</div>
+</div>
+<div style="padding: 16px; background: #11171F; border: 1px solid #1F2933; border-radius: 10px">
+<div style="font-size: 13px; color: #A3B0BC">Long-term trend here</div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; margin-top: 4px">[ trend / decade ]</div>
+<div style="font-size: 12px; color: #8B98A5; margin-top: 2px">OMI, 2004–2025 · [ significant / not ]</div>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 1.55">A smoggy day is weather. A trend is climate. The live view shows today; the Trends view tells you if today is part of something real.</p>
+<a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 8px; background: #E6EDF3; color: #0A0E13; text-decoration: none; font-weight: 600; font-size: 14px">See the 20-year trend</a>
+</aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const rows = [
+      ['Nitrogen dioxide (NO₂)', 'TROPOMI', '27 Oct'],
+      ['NO₂, hourly · N. America', 'TEMPO', '26 Oct 22:32'],
+      ['Sulfur dioxide (SO₂)', 'TROPOMI · OMI', '27 Oct'],
+      ['Methane, 400 hPa', 'AIRS', '19 Oct'],
+      ['Carbon monoxide', 'AIRS', '19 Oct'],
+      ['Ozone, total column', 'OMPS', '27 Oct'],
+      ['Aerosols', 'OMI · VIIRS', '27 Oct'],
+      ['Active fires', 'VIIRS · MODIS', '27 Oct'],
+      ['Precipitation', 'GPM IMERG', '26 Oct'],
+      ['Sea surface temperature', 'MUR', '26 Oct'],
+      ['Snow and sea ice', 'VIIRS', '27 Oct']
+    ];
+    const layers = rows.map((r, i) => ({
+      name: r[0], source: r[1], updated: r[2],
+      rowStyle: 'width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-family: inherit; cursor: pointer; min-height: 44px; ' + (i === 0 ? 'background: #18222D; border: 1px solid #E07A2E;' : 'background: transparent; border: 1px solid transparent;')
+    }));
+    return { layers };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+Arctic sea ice, September          1979-2025  Sen slope -0.742 M km2/decade  z=-6.90  p=5.3e-12
+Antarctic sea ice, February        1979-2025  Sen slope -0.078 M km2/decade  z=-1.52  p=1.3e-01
+CO2 global mean                    1979-2025  Sen slope +18.94 ppm/decade  z=+9.90  p=4.0e-23
+CH4 global mean                    1984-2025  Sen slope +58.09 ppb/decade  z=+9.15  p=5.9e-20
+N2O global mean                    2001-2025  Sen slope +9.51 ppb/decade  z=+6.98  p=2.9e-12
+SF6 global mean                    1998-2025  Sen slope +2.99 ppt/decade  z=+7.45  p=9.5e-14

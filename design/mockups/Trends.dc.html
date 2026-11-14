@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarthSignal, trends surface</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0A0E13}
+a{color:#7FB2EA}a:hover{color:#A9CCF2}
+</style>
+</helmet>
+<div style="min-height: 900px; background: #0A0E13; color: #E6EDF3; font-family: 'IBM Plex Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 12px 24px; border-bottom: 1px solid #1F2933; background: #0D1218">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="22" height="22" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="none" stroke="#E6EDF3" stroke-width="1.5"></circle><path d="M3 15 L8 15 L10 9 L13 19 L16 7 L18 15 L23 15" fill="none" stroke="#F0A04B" stroke-width="1.8" stroke-linejoin="round"></path></svg>
+<span style="font-weight: 600; font-size: 15px">EarthSignal</span>
+</div>
+<nav aria-label="Mode" style="display: flex; gap: 2px">
+<a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; background: #1A232D; color: #E6EDF3; text-decoration: none; font-size: 13px; font-weight: 600">Trends</a>
+<a href="Live.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #A3B0BC; text-decoration: none; font-size: 13px">Live today</a>
+</nav>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8B98A5">sample-data / 10° grid / 648 cells</div>
+</header>
+
+<main style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+
+<aside aria-label="Method steps" style="flex: 1 1 300px; max-width: 340px; border-right: 1px solid #1F2933; padding: 20px 18px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8B98A5; padding: 0 10px 8px">method</div>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="5">
+<li>
+<button onClick="{{s.pick}}" style="{{s.style}}">
+<span style="display: flex; align-items: baseline; gap: 10px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8B98A5">{{s.num}}</span>
+<span style="font-size: 14px; font-weight: 600; color: #E6EDF3">{{s.title}}</span>
+</span>
+<sc-if value="{{s.active}}" hint-placeholder-val="{{false}}">
+<span style="display: block; margin: 8px 0 0 22px; font-size: 13px; line-height: 1.5; color: #C5D0DA; text-align: left">{{s.body}}</span>
+</sc-if>
+</button>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{isClose}}" hint-placeholder-val="{{false}}">
+<form style="margin-top: 10px; padding: 14px; border: 1px solid #F0A04B; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; background: #11171F">
+<label for="place" style="font-size: 13px; color: #C5D0DA">Where do you want to look?</label>
+<input id="place" placeholder="Delhi, the Arctic, your hometown" style="background: #0A0E13; color: #E6EDF3; border: 1px solid #2A3642; border-radius: 6px; padding: 11px 12px; font-family: inherit; font-size: 15px">
+<label for="variable" style="font-size: 13px; color: #C5D0DA">At what?</label>
+<select id="variable" style="background: #0A0E13; color: #E6EDF3; border: 1px solid #2A3642; border-radius: 6px; padding: 10px; font-family: inherit; font-size: 14px"><option>Land surface temperature</option><option>Sea ice</option><option>Methane</option><option>NO₂</option><option>Water storage</option></select>
+<button type="button" style="min-height: 44px; border: 0; border-radius: 6px; background: #F0A04B; color: #15110F; font-family: inherit; font-size: 14px; font-weight: 600">Test it</button>
+</form>
+</sc-if>
+</aside>
+
+<section aria-label="Map surface" style="flex: 999 1 560px; min-width: 0; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px">
+<div style="font-size: 18px; font-weight: 600">{{headline}}</div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8B98A5">step {{stageNum}} of 5</div>
+</div>
+<div style="position: relative; display: flex; gap: 8px">
+<div style="display: flex; flex-direction: column; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8B98A5; padding: 2px 0"><span>90N</span><span>0</span><span>90S</span></div>
+<div role="img" aria-label="{{mapLabel}}" style="flex: 1; display: grid; grid-template-columns: repeat(36, minmax(0, 1fr)); gap: 1px; background: #0A0E13; border: 1px solid #1F2933; border-radius: 6px; padding: 1px">
+<sc-for list="{{cells}}" as="c" hint-placeholder-count="648">
+<div style="{{c.style}}"></div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; font-size: 13px; color: #C5D0DA">
+<div style="display: flex; align-items: center; gap: 8px"><span>Falling</span><span style="width: 120px; height: 10px; border-radius: 2px; background: linear-gradient(90deg, #4C8DD6, #22303D, #E0843A)"></span><span>Rising</span></div>
+<div style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; background: #4C8DD6"></span>Passes the test</div>
+<div style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; background: #4C8DD6; opacity: 0.18"></span>Could be chance</div>
+</div>
+</section>
+
+<aside aria-label="Real results" style="flex: 1 1 300px; max-width: 360px; border-left: 1px solid #1F2933; padding: 20px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8B98A5">real data, NSIDC sea ice 1979 to 2025</div>
+<div style="padding: 14px; background: #11171F; border: 1px solid #1F2933; border-radius: 8px">
+<div style="font-size: 14px; color: #C5D0DA">Arctic, September</div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; color: #7FB2EA; margin-top: 4px">−0.74</div>
+<div style="font-size: 12px; color: #8B98A5">million km² per decade</div>
+<div style="display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: 999px; background: #E6EDF3; color: #0A0E13; font-size: 12px; font-weight: 600">Passes · p &lt; 0.0001</div>
+</div>
+<div style="padding: 14px; background: #11171F; border: 1px solid #1F2933; border-radius: 8px">
+<div style="font-size: 14px; color: #C5D0DA">Antarctic, February</div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; color: #7FB2EA; opacity: 0.55; margin-top: 4px">−0.08</div>
+<div style="font-size: 12px; color: #8B98A5">million km² per decade</div>
+<div style="display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: 999px; border: 1px solid #5A6672; color: #C5D0DA; font-size: 12px">Could be chance · p = 0.13</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #C5D0DA">Both have dropped since 2016. Only one is a trend.</p>
+</aside>
+</main>
+
+<footer style="display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 9px 24px; border-top: 1px solid #1F2933; background: #0D1218; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #A3B0BC">
+<span>cells 648</span>
+<span>pass p&lt;0.05: {{nRaw}}</span>
+<span>expected by chance: ~{{nChance}}</span>
+<span>pass after FDR q&lt;0.05: {{nFdr}}</span>
+<span style="color: #8B98A5">map shows labelled sample data; side panel is real</span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  data() {
+    if (this._d) return this._d;
+    let a = 20261114;
+    const rnd = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const gauss = () => Math.sqrt(-2 * Math.log(rnd() + 1e-12)) * Math.cos(2 * Math.PI * rnd());
+    const erfc = (x) => { const t = 1 / (1 + 0.5 * x); return t * Math.exp(-x * x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277))))))))); };
+    const cells = [];
+    for (let r = 0; r < 18; r++) {
+      const lat = 85 - r * 10;
+      for (let c = 0; c < 36; c++) {
+        const lon = -175 + c * 10;
+        let effect = 0;
+        if (lat >= 65) effect = -5.5;
+        if (lat <= -65) effect = -1.0;
+        if ((lat === 25 || lat === 35) && lon >= 65 && lon <= 95) effect = 4.2;
+        const season = 2.4 * Math.sin((lat / 90) * Math.PI) + 1.2 * Math.cos(lon / 40);
+        const n = gauss();
+        const z = effect + n;
+        const zRaw = 0.5 * effect + season + 1.6 * gauss();
+        const p = erfc(Math.abs(z) / Math.SQRT2);
+        cells.push({ z, zRaw, p });
+      }
+    }
+    const m = cells.length, q = 0.05;
+    const sorted = cells.map((x) => x.p).sort((x, y) => x - y);
+    let thr = 0;
+    for (let k = m; k >= 1; k--) { if (sorted[k - 1] <= (k / m) * q) { thr = sorted[k - 1]; break; } }
+    const nRaw = cells.filter((x) => x.p < 0.05).length;
+    const nFdr = cells.filter((x) => x.p <= thr).length;
+    this._d = { cells, thr, nRaw, nFdr, nChance: Math.round(0.05 * m) };
+    return this._d;
+  }
+  color(v) {
+    const t = Math.min(Math.abs(v) / 6, 1);
+    const base = [34, 48, 61], neg = [76, 141, 214], pos = [224, 132, 58];
+    const to = v < 0 ? neg : pos;
+    const mix = base.map((b, i) => Math.round(b + (to[i] - b) * t));
+    return 'rgb(' + mix.join(',') + ')';
+  }
+  renderVals() {
+    const stage = (this.state && this.state.stage) || 0;
+    const d = this.data();
+    const cells = d.cells.map((x) => {
+      const v = stage === 0 ? x.zRaw : x.z;
+      let op = 1;
+      if (stage === 2) op = x.p < 0.05 ? 1 : 0.18;
+      if (stage >= 3) op = x.p <= d.thr ? 1 : 0.18;
+      return { style: 'aspect-ratio: 1; border-radius: 1px; background: ' + this.color(v) + '; opacity: ' + op + '; transition: opacity 600ms ease, background-color 600ms ease' };
+    });
+    const defs = [
+      ['Raw trend', 'Every trend map shows change somewhere. Here most of it is the seasons and noise.'],
+      ['Seasons removed', 'Subtract each month’s normal. The big bands disappear.'],
+      ['Tested, cell by cell', d.nRaw + ' cells pass a Mann-Kendall test at p < 0.05. But about ' + d.nChance + ' would pass by chance alone.'],
+      ['Corrected for chance', 'False discovery rate, q < 0.05. ' + d.nFdr + ' cells survive. That is the signal.'],
+      ['Your turn', 'Pick a place and a variable.']
+    ];
+    const steps = defs.map((s, i) => ({
+      num: String(i + 1), title: s[0], body: s[1], active: i === stage,
+      pick: () => this.setState({ stage: i }),
+      style: 'width: 100%; display: block; text-align: left; padding: 12px 10px; border-radius: 8px; font-family: inherit; cursor: pointer; min-height: 44px; color: inherit; ' + (i === stage ? 'background: #18222D; border: 1px solid ' + (i === 3 ? '#F0A04B' : '#3F7FCC') + ';' : 'background: transparent; border: 1px solid transparent;')
+    }));
+    const heads = ['Sample variable, raw 20-year trend', 'Same data, seasonal cycle removed', 'Each cell tested on its own', 'Corrected for testing 648 cells at once', 'Corrected for testing 648 cells at once'];
+    return {
+      cells, steps, headline: heads[stage], stageNum: String(stage + 1), isClose: stage === 4,
+      nRaw: String(d.nRaw), nFdr: String(d.nFdr), nChance: String(d.nChance),
+      mapLabel: 'Grid map of labelled sample data at step ' + (stage + 1) + ' of 5: ' + heads[stage]
+    };
+  }
+}
+</script>
+</body>
+</html>

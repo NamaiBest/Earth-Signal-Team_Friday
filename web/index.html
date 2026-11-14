@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EarthSignal · Team Friday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="exp.css">
+</head>
+<body>
+<div id="map"></div>
+
+<aside id="controls" class="panel">
+  <header>
+    <h1>EarthSignal</h1>
+    <p class="sub">What is really changing in your district, tested for significance.</p>
+  </header>
+
+  <div class="search">
+    <input id="search" type="search" placeholder="Search a district or state" autocomplete="off" aria-label="Search a district or state">
+    <ul id="results" hidden></ul>
+  </div>
+
+  <section>
+    <h2>Detect <span class="hint">trend per decade, NASA record</span></h2>
+    <div id="vars" class="chips" role="group" aria-label="Variable"></div>
+    <div id="periods" class="chips small" role="group" aria-label="Season"></div>
+    <div id="viewSel" class="chips small" role="group" aria-label="Map unit"><button type="button" data-v="districts" aria-pressed="true">Districts</button><button type="button" data-v="pixels" aria-pressed="false">Pixels (~25–100 km)</button></div>
+    <div id="legend"></div>
+    <p id="tally" class="mono"></p>
+  </section>
+
+  <section>
+    <h2>Suspects <span class="hint">emission sources</span></h2>
+    <label class="row" id="susLabel"><input type="checkbox" id="suspectsOn" checked> Show sources on the map</label>
+    <div id="types" class="chips small"></div>
+    <label class="row"><input type="checkbox" id="firesOn"> Active fires, last 5 days (NASA FIRMS)</label>
+    <p class="note" id="firesNote"></p>
+    <p class="note">Climate TRACE estimates for 2024. A source near a trend is an association, not proof.</p>
+  </section>
+
+  <section>
+    <h2>Live from NASA <span class="hint">satellite imagery</span></h2>
+    <div class="row">
+      <select id="gibs" aria-label="NASA imagery layer"></select>
+      <input id="gibsDate" type="date" aria-label="Imagery date">
+    </div>
+    <p class="note">Tiles stream from NASA GIBS. This is what the satellite saw that day, not a trend.</p>
+  </section>
+
+  <footer class="note">
+    Data: NASA OMI, MODIS, FIRMS, POWER (MERRA-2, CERES), GIBS; Climate TRACE; geoBoundaries.
+    Method: Mann-Kendall, Sen's slope, false-discovery-rate correction.
+  </footer>
+</aside>
+
+<aside id="casefile" class="panel" hidden>
+  <button id="close" aria-label="Close case file">×</button>
+  <div id="cf"></div>
+</aside>
+
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+<button id="uiToggle" type="button" aria-pressed="false" title="Switch between the classic and experimental interface"><span class="led"></span><span class="lbl">Experimental UI</span></button>
+
+<script src="app.js"></script>
+<script src="exp.js"></script>
+</body>
+</html>

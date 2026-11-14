@@ -223,10 +223,13 @@
       ${ai.answer ? `<div class="aitext answer">${md(ai.answer)}</div>${checkNumbers(ai.answer)}` : ''}</div>`;
   }
   async function callAI(c, mode, question) {
-    const r = await fetch('api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mode, question, facts: facts(c) }) });
+    const r = await fetch('api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mode, question, facts: facts(c), code: accessCode() }) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.message || `Request failed (${r.status})`);
     return j;
+  }
+  function accessCode() { // optional shared passcode: open the site once with ?code=XXXX
+    try { const q = new URLSearchParams(location.search).get('code'); if (q) localStorage.setItem('earthsignal-code', q); return q || localStorage.getItem('earthsignal-code') || ''; } catch (e) { return ''; }
   }
   function wireAI(c) {
     const go = $p('#aiGo'), ask = $p('#aiAsk'), q = $p('#aiQ');

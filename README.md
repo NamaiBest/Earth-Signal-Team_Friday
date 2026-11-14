@@ -39,7 +39,7 @@ cd web && python3 -m http.server 8000   # then open http://localhost:8000
 
 - **v1 · Rules** (default): pick a state or district (+ optional airshed radius). Ranked list of significant trends in the harmful direction, "now vs normal" alerts (live fires, recent SO₂/NO₂), the largest Climate TRACE sources tagged when they sit in India's top-5 % SO₂ cells or where NO₂ is rising, and a downloadable Markdown brief. Built by `scripts/build_policy.py` → `web/data/policy.json`.
 - **v2 · AI-assisted** (switch at the top of the panel; remembered per browser; `?policy=v2`): Claude drafts a brief and answers questions **only from the facts on the page**, citing fact IDs (I# issues, A# alerts, S# sources). Every number in the answer is checked against the data and mismatches are flagged.
-  - Runs in the Vercel function `api/brief.js`. **Set `ANTHROPIC_API_KEY`** in Vercel → Project → Settings → Environment Variables (optional: `CLAUDE_MODEL`, `ACCESS_CODE`), then redeploy. Without the key, v2 says so and v1 still works.
+  - Runs in the Vercel function `api/brief.js`. **Set `ANTHROPIC_API_KEY`** in Vercel → Project → Settings → Environment Variables (optional: `CLAUDE_MODEL`; `ACCESS_CODE` to stop strangers spending your credits: share the site as `…/?tab=policy&policy=v2&code=YOURCODE` and the browser remembers it), then redeploy. Without the key, v2 says so and v1 still works.
 
 ## Rebuild the data
 

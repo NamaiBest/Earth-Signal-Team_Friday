@@ -268,19 +268,31 @@ async function caseFile(id) {
   const srcRow = (s, extra = '') => `<div class="item"><span class="dot" style="background:${TYPE_COLOR[s.properties.type]}"></span><b>${esc(s.properties.name)}</b>
     <span class="stat">${esc(s.properties.type)}${s.properties.fuel ? ' · ' + esc(s.properties.fuel) : ''} · ${tonnes(s.properties.co2e_t)} CO₂e/yr${extra}</span></div>`;
 
+  const pct = (v, r) => (T.vars[v].rel && r[3] ? `${signed((r[0] / r[3]) * 100)}%` : `${signed(r[0])}${T.vars[v].unit ? ' ' + esc(T.vars[v].unit) : ''}`);
   let h = `<p class="cf-title">${esc(P.name)}</p><p class="cf-meta">${esc(P.state)} · ${Number(P.area_km2).toLocaleString('en-IN')} km² · case file</p>
-    ${stamp(d)}
-    <div class="verdict"><b>${clues.length} of ${vars.length}</b> variables show a significant change over their NASA record.
+    ${stamp(d)}`;
+
+  // Evidence first: headline numbers, the chart, then the month-by-month calendar.
+  const cur = d[S.v] && d[S.v][pIndex()], cm = T.vars[S.v];
+  if (cur && cur[0] !== null) {
+    h += `<div class="kpis"><div><i>Change per decade</i><b class="${cur[0] > 0 ? 'up' : 'down'}">${pct(S.v, cur)}</b></div>
+      <div><i>95% range</i><b>${cur[4] != null ? `${signed(cur[4])} to ${signed(cur[5])}` : 'n/a'}</b></div>
+      <div><i>Record</i><b>${cm.years.join('–')}</b></div></div>`;
+  }
+  if (ser && ser.vars && ser.vars[S.v]) h += `<h3>Evidence: ${esc(cm.short)}, ${esc(String(lab(S.p)))}</h3>` + chart(ser, id);
+  h += '<h3>Month by month</h3>' + calendar(d, vars);
+
+  h += `<div class="verdict"><b>${clues.length} of ${vars.length}</b> variables show a significant change over their NASA record.
     ${alibis.length ? `<b>${alibis.length}</b> apparent change${alibis.length > 1 ? 's' : ''} did not survive the test.` : ''}</div>`;
 
-  h += '<h3>Clues</h3>' + (clues.length ? clues.map((c) => `<div class="item"><b>${esc(T.vars[c.v].short)}</b> is ${dir(c.main.r[0])}: ${change(c.v, c.main.r)}
-      <span class="stat">${ci(c.main.r)} · ${T.vars[c.v].years.join('–')} · ${esc(lab(c.main.s))} · p ${pq(c.main.r[1])} · q ${pq(c.main.r[2])} · ${esc(T.vars[c.v].res)} ${T.vars[c.v].kind}</span></div>`).join('')
+  h += '<h3>Clues</h3>' + (clues.length ? '<div class="clues">' + clues.map((c) => `<button type="button" class="clue${c.v === S.v ? ' on' : ''}" data-clue="${c.v}" data-s="${c.main.s}" title="Show ${esc(T.vars[c.v].short)} on the map and chart">
+      <span class="arrow ${c.main.r[0] > 0 ? 'up' : 'down'}">${c.main.r[0] > 0 ? '↑' : '↓'}</span>
+      <span class="ct"><b>${esc(T.vars[c.v].short)}</b> ${c.main.r[0] > 0 ? 'rising' : 'falling'}<small>${esc(lab(c.main.s))} · ${T.vars[c.v].years.join('–')}${c.main.r[4] != null ? ` · range ${signed(c.main.r[4])} to ${signed(c.main.r[5])}` : ''}</small></span>
+      <span class="cv ${c.main.r[0] > 0 ? 'up' : 'down'}">${pct(c.v, c.main.r)}<small>per decade</small></span></button>`).join('') + '</div>'
     : '<p class="empty">No variable passes the significance test here.</p>');
 
   const pat = clues.filter((c) => c.seas);
-  h += '<h3>Pattern</h3>' + (pat.length ? pat.map((c) => `<div class="item"><b>${esc(T.vars[c.v].short)}</b> changes fastest in <b>${esc(lab(c.seas.s))}</b>: ${change(c.v, c.seas.r)}
-      <span class="stat">q ${pq(c.seas.r[2])}</span></div>`).join('') : '<p class="empty">No single season stands out.</p>');
-  h += calendar(d, vars);
+  h += '<h3>Pattern</h3>' + (pat.length ? pat.map((c) => `<div class="item"><b>${esc(T.vars[c.v].short)}</b> changes fastest in <b>${esc(lab(c.seas.s))}</b>: ${change(c.v, c.seas.r)}</div>`).join('') : '<p class="empty">No single season stands out.</p>');
 
   h += '<h3>Alibis</h3>' + (alibis.length || quiet.length ? alibis.slice(0, 6).map((a) => `<div class="item"><b>${esc(T.vars[a.v].short)}</b>, ${esc(lab(a.s))}: looks like a change (${change(a.v, a.r)}) but is not significant
       <span class="stat">p ${pq(a.r[1])} alone, q ${pq(a.r[2])} after correcting for 735 districts</span></div>`).join('') +
@@ -292,12 +304,10 @@ async function caseFile(id) {
     (near.length ? `<p class="cf-meta" style="margin-top:8px">Within 50 km of the district centre:</p>` + near.slice(0, 3).map((s) => srcRow(s, ` · ${Math.round(km([P.lon, P.lat], s.geometry.coordinates))} km away`)).join('') : '') +
     `<p class="caveat">Nearby, not responsible. A satellite cell mixes many sources and wind moves pollution, so this list is an association, not proof.</p>`;
 
-  if (ser && ser.vars && ser.vars[S.v]) {
-    h += '<h3>Associations</h3>' + associations(ser, vars);
-    h += `<h3>Evidence: ${esc(T.vars[S.v].short)}, ${esc(String(lab(S.p)))}</h3>` + chart(ser, id);
-  }
+  if (ser && ser.vars && ser.vars[S.v]) h += '<h3>Associations</h3>' + associations(ser, vars);
   if (vars.some((v) => T.vars[v].kind === 'model')) h += `<p class="caveat">Temperature, rainfall and soil moisture come from NASA's MERRA-2 model reanalysis. Its long-term trends can carry artefacts from changes in the observations fed to the model. Check against station records before using them for policy.</p>`;
   $('#cf').innerHTML = h;
+  $('#cf').querySelectorAll('[data-clue]').forEach((b) => { b.onclick = () => { S.p = b.dataset.s; window.pickVar(b.dataset.clue); window.pickSeason(b.dataset.s); }; });
   $('#casefile').scrollTop = 0;
 }
 

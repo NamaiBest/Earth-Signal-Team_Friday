@@ -131,15 +131,13 @@
       const sev = `rgb(${mix([255, 209, 102], [255, 70, 58], Math.max(0, Math.min(1, (x.score - 55) / 45))).join(',')})`;
       const big = x.rel !== null ? `${signed(x.rel)}%` : `${signed(x.slope)}${unit}`;
       return `<li id="fact-I${n}"><button type="button" data-id="${x.id}" data-v="${x.v}" data-p="${x.p}" title="Severity ${Math.round(x.score)} of 100 · q ${pq(x.q)} after correction · click to open on the map">
-        <span class="sev" style="--c:${sev}"><b>${Math.round(x.score)}</b><i>severity</i></span>
-        <span class="tx"><span class="ttl"><b>${esc(m.short)} ${worse}</b> in ${dname(x.id)} <span class="fid">I${n}</span></span>
+        <span class="hd"><span class="sev" style="--c:${sev}" aria-label="Severity ${Math.round(x.score)} of 100">${Math.round(x.score)}</span>
+          <span class="ttl"><b>${esc(m.short)} ${worse}</b> in ${dname(x.id)}</span></span>
         <span class="facts">
-          <span><i>Change</i><b>${big}</b> per decade</span>
+          <span class="main"><i>Change</i><b>${big}</b> per decade</span>
           <span><i>When</i>${esc(String(lab(x.p)))}</span>
-          ${x.rel !== null ? `<span><i>Amount</i>${signed(x.slope)}${unit}</span>` : ''}
           ${x.lo != null ? `<span><i>95% range</i>${signed(x.lo)} to ${signed(x.hi)}</span>` : ''}
-          <span><i>Record</i>${m.years.join('–')}</span>
-        </span></span></button></li>`;
+        </span></button></li>`;
     }).join('') + '</ol>' : '<p class="empty">No significant worsening trend in this area.</p>';
 
     h += `<h3>Alerts <span class="hint">now vs normal</span></h3>`;

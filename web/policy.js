@@ -127,10 +127,19 @@
     h += `<h3>Confirmed problems <span class="hint">worsening, significant, ranked by severity</span></h3>`;
     h += c.issues.length ? '<ol class="issues">' + c.issues.slice(0, 15).map((x) => {
       const m = T.vars[x.v];
-      return `<li id="fact-I${c.issues.indexOf(x) + 1}"><button type="button" data-id="${x.id}" data-v="${x.v}" data-p="${x.p}">
-        <span class="sc" style="--w:${x.score}%">${Math.round(x.score)}</span>
-        <span class="tx">${ver === 'v2' ? `<span class="fid">I${c.issues.indexOf(x) + 1}</span> ` : ''}<b>${esc(m.short)}</b> ${x.slope * P.harm[x.v].sign > 0 ? (P.harm[x.v].sign > 0 ? 'rising' : 'falling') : ''} in ${dname(x.id)}
-        <small>${esc(String(lab(x.p)))} · ${signed(x.slope)}${m.unit ? ' ' + esc(m.unit) : ''}/decade${x.rel !== null ? ` (${signed(x.rel)}%)` : ''}${x.lo != null ? ` · 95% CI ${signed(x.lo)} to ${signed(x.hi)}` : ''} · q ${pq(x.q)} · ${m.years.join('–')}</small></span></button></li>`;
+      const n = c.issues.indexOf(x) + 1, worse = P.harm[x.v].sign > 0 ? 'rising' : 'falling', unit = m.unit ? ' ' + esc(m.unit) : '';
+      const sev = `rgb(${mix([255, 209, 102], [255, 70, 58], Math.max(0, Math.min(1, (x.score - 55) / 45))).join(',')})`;
+      const big = x.rel !== null ? `${signed(x.rel)}%` : `${signed(x.slope)}${unit}`;
+      return `<li id="fact-I${n}"><button type="button" data-id="${x.id}" data-v="${x.v}" data-p="${x.p}" title="Severity ${Math.round(x.score)} of 100 · q ${pq(x.q)} after correction · click to open on the map">
+        <span class="sev" style="--c:${sev}"><b>${Math.round(x.score)}</b><i>severity</i></span>
+        <span class="tx"><span class="ttl"><b>${esc(m.short)} ${worse}</b> in ${dname(x.id)} <span class="fid">I${n}</span></span>
+        <span class="facts">
+          <span><i>Change</i><b>${big}</b> per decade</span>
+          <span><i>When</i>${esc(String(lab(x.p)))}</span>
+          ${x.rel !== null ? `<span><i>Amount</i>${signed(x.slope)}${unit}</span>` : ''}
+          ${x.lo != null ? `<span><i>95% range</i>${signed(x.lo)} to ${signed(x.hi)}</span>` : ''}
+          <span><i>Record</i>${m.years.join('–')}</span>
+        </span></span></button></li>`;
     }).join('') + '</ol>' : '<p class="empty">No significant worsening trend in this area.</p>';
 
     h += `<h3>Alerts <span class="hint">now vs normal</span></h3>`;
@@ -246,10 +255,10 @@
     };
   }
   function aiBlock() {
-    const out = ai.busy ? '<p class="empty">The AI is reading the evidence…</p>' : ai.text ? `<div class="aitext">${md(ai.text)}</div>${checkNumbers(ai.text)}<p class="note">${esc(ai.meta)}</p>` : '<p class="note">The AI (Gemini) drafts a brief from the issues, alerts and sources below, citing each by ID. Every number is checked against the data.</p>';
+    const out = ai.busy ? '<p class="empty">The AI is reading the evidence…</p>' : ai.text ? `<div class="aitext">${md(ai.text)}</div>${checkNumbers(ai.text)}<p class="note">${esc(ai.meta)}</p>` : '<p class="note">Ask the AI anything about the problems in this area, in plain language, or have it draft a brief. It answers only from the evidence below and cites each fact.</p>';
     return `<div class="aibox"><h3>AI brief <span class="hint">grounded in this page</span></h3>${out}
       <div class="pbtns"><button type="button" id="aiGo" ${ai.busy ? 'disabled' : ''}>${ai.text ? 'Regenerate brief' : 'Generate AI brief'}</button></div>
-      <div class="ask"><input id="aiQ" type="search" placeholder="Ask about this area, e.g. which issue is most certain?" value="${esc(ai.q)}" aria-label="Ask about this area"><button type="button" id="aiAsk">Ask</button></div>
+      <div class="ask"><input id="aiQ" type="search" placeholder="Ask anything, e.g. what should we act on first?" value="${esc(ai.q)}" aria-label="Ask about this area"><button type="button" id="aiAsk">Ask</button></div>
       ${ai.answer ? `<div class="aitext answer">${md(ai.answer)}</div>${checkNumbers(ai.answer)}` : ''}</div>`;
   }
   async function callAI(c, mode, question) {

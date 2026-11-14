@@ -52,6 +52,7 @@ const isSig = (r) => r && r[2] !== null && r[2] < T.alpha;
 
   map = new maplibregl.Map({
     container: 'map', style: 'https://tiles.openfreemap.org/styles/dark', center: [80, 22.5], zoom: 3.7,
+    minZoom: 1.6, maxZoom: 8.6, maxPitch: 60, // the data is 25-100 km cells: closer than this shows nothing new and the 3D view breaks up
     attributionControl: { compact: true, customAttribution: 'NASA POWER · NASA GIBS · Climate TRACE · geoBoundaries' },
   });
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');

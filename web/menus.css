@@ -1,0 +1,32 @@
+/* Readable dropdowns everywhere. Loaded last so it wins over older per-view rules.
+   Covers: search suggestion lists (Detect, Policy, Learn > Investigate) and native <select> menus. */
+
+/* suggestion lists: solid navy glass, above everything, clear hover */
+#results, #pResults, .isearch ul {
+  z-index: 30;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)), #15233f !important;
+  border: 1px solid rgba(244,237,224,.28) !important;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(6,10,24,.6), inset 0 1px 0 rgba(255,255,255,.18);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  color: #F4EDE0; text-shadow: none;
+}
+#results li, #pResults li, .isearch li { color: #F4EDE0; font-size: 14px; }
+#results li:hover, #results li.on, #pResults li:hover, .isearch li:hover { background: rgba(255,107,91,.22) !important; }
+#results small, #pResults small, .isearch small { color: rgba(244,237,224,.62); }
+
+/* native selects: dark control + dark option menu (color-scheme makes macOS/Windows draw it dark) */
+select {
+  color-scheme: dark;
+  color: #F4EDE0;
+  background-color: #15233f !important;
+  border: 1px solid rgba(244,237,224,.28);
+  text-shadow: none;
+}
+select option, select optgroup { background-color: #14213D; color: #F4EDE0; }
+select option:checked { background-color: #FF6B5B; color: #fff; }
+input[type=date] { color-scheme: dark; color: #F4EDE0; background-color: #15233f !important; }
+body.exp select, body.exp input[type=date] { background-color: #101b34 !important; }
+
+/* panels scroll; keep open lists from being clipped by giving their wrapper room */
+.search, .isearch { z-index: 30; }

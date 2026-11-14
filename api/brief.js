@@ -67,23 +67,39 @@ export default async function handler(req, res) {
   }
 }
 
+// Gemini is often overloaded ("high demand") or slow; try a chain of models, 18 s each.
 async function gemini(prompt, mode) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent`;
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM }] },
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.2, maxOutputTokens: mode === 'brief' ? 4096 : 2048 },
-    }),
-  });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.error?.message || `Gemini API error ${r.status}`);
-  const cand = (data.candidates || [])[0];
-  const text = (cand?.content?.parts || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('').trim();
-  if (!text) throw new Error(`Gemini returned no text (${cand?.finishReason || data?.promptFeedback?.blockReason || 'unknown reason'})`);
-  return { text, model: data.modelVersion || GEMINI_MODEL, usage: data.usageMetadata || null };
+  const models = [...new Set([GEMINI_MODEL, 'gemini-3.6-flash', 'gemini-3.5-flash-lite'])];
+  let last = 'no model answered';
+  for (const model of models) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 18_000);
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+        method: 'POST', signal: ctl.signal,
+        headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: mode === 'brief' ? 4096 : 2048 },
+        }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        last = data?.error?.message || `Gemini API error ${r.status}`;
+        if ([429, 500, 503, 504].includes(r.status) || r.status === 404) continue; // busy or unknown model: next
+        throw new Error(last); // bad key etc.: stop
+      }
+      const cand = (data.candidates || [])[0];
+      const text = (cand?.content?.parts || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('').trim();
+      if (!text) { last = `Gemini returned no text (${cand?.finishReason || 'unknown reason'})`; continue; }
+      return { text, model: data.modelVersion || model, usage: data.usageMetadata || null };
+    } catch (e) {
+      if (e.name === 'AbortError') { last = `${model} took too long`; continue; }
+      throw e;
+    } finally { clearTimeout(timer); }
+  }
+  throw new Error(`${last}. Please try again in a minute.`);
 }
 
 async function claude(prompt, mode) {

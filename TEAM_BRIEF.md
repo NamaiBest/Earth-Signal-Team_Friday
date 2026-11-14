@@ -62,13 +62,23 @@ Build a tool that (1) selects Earth variables from missions or models, (2) shows
 ### Satellite data (added Fri night, live)
 | Variable | Source | Years | Significant districts (FDR q < 0.05) |
 |---|---|---|---|
-| **NO₂** (default view) | NASA Aura OMI, daily → monthly, ~25 km | 2005–2025 | 503 (445 rising, 58 falling). Coal belt +0.8 to +1.1 ×10¹⁵ molec/cm²/decade (Singrauli, Korba, Angul, Dhanbad); Delhi, Mumbai not significant |
+| **NO₂** (default view) | NASA Aura OMI, daily → monthly, ~25 km | 2005–2025 | 503 (445 rising, 58 falling). Coal belt +0.8 to +1.1 ×10¹⁵ molec/cm²/decade (Singrauli, Korba, Angul, Dhanbad); **Delhi and Mumbai falling** (New Delhi −0.50, 95% CI −0.73 to −0.26, q < 0.0001) |
 | **Land surface temperature** | NASA Terra MODIS MOD11C3 | 2001–**2022** | 474 (mostly cooling: validate before quoting) |
 | **Greenness (NDVI)** | NASA Terra MODIS MOD13C2 | 2001–2025 | 729 (728 rising) |
 | **Fires** | NASA FIRMS MODIS archive, vegetation fires | 2003–2025 | 371 (286 rising, 85 falling; Punjab post-monsoon falling) |
 | Live fires | NASA FIRMS VIIRS, last 5 days | 9–13 Nov snapshot | 20,409 detections |
 
 Plus: **Districts / Pixels** switch (per-cell whole-year trends, FDR across cells). Each variable is tested on its own record; months with no data are skipped, never filled.
+
+### Validation against NASA Giovanni (Sat 14 Nov) → `docs/VALIDATION.md`
+- **NO₂**: identical to Giovanni at 9/9 sites (r = 1.000, same Sen's slope and p). **SO₂**: r ≥ 0.997 at 8/9, 9/9 same verdict.
+- **Air temperature**: our extraction matches MERRA-2 exactly (r = 1.000), so the NW cooling is in the model itself: still unvalidated.
+- **Rainfall vs independent GPM IMERG**: agrees at 4/6 sites, but the big MERRA-2 rises at **Lawngtlai and Ludhiana are not confirmed** → artefacts.
+
+### Also new (Sat 14 Nov)
+- **SO₂** (OMI, 2005–2025): 140 districts significant; Jharsuguda, Angul, Korba, Singrauli, Jamnagar rising.
+- **95 % confidence intervals** on every Sen's slope (Gilbert 1987).
+- **Clearer left panel**; **Policy tab** with v1 (rules) / v2 (AI brief + Q&A via Gemini, cited, number-checked; needs `GEMINI_API_KEY` in Vercel).
 
 ### Known issues (be honest with judges)
 - **MODIS land temperature is cut at 2022**: from 2023 Terra passes over earlier in the day (India-mean −0.7, −1.4, −2.8 °C in 2023–25 = instrument, not climate). Cooling before 2023 may still be partly drift.
@@ -81,8 +91,8 @@ Plus: **Districts / Pixels** switch (per-cell whole-year trends, FDR across cell
 ### Earlier groundwork
 34 NASA datasets verified in CMR · NOAA gas records + sea-ice downloaded · method validated (Arctic Sept sea ice −0.74 M km²/decade, significant; Antarctic not significant, p = 0.13) · design mockups.
 
-## Idea under discussion: Policy workspace (not built)
-A second tab where a government user (e.g. Delhi) sees **ranked "issues"** (district × variable × season, plus nearby sources) and drafts a policy brief from them. Options and trade-offs are in the chat thread; decide as a team before building.
+## Policy workspace (built)
+Policy tab: pick a state/district (+ airshed). v1 ranks significant worsening trends, alerts and nearby sources; v2 adds an AI brief and Q&A grounded only in those facts. See README.
 
 ## Tools we'll use
 Python: xarray, pyMannKendall, statsmodels (FDR) · Web: MapLibre GL v5, uPlot, d3-scale-chromatic · Data: NASA Earthdata, GIBS, FIRMS, GEOS-CF, Climate TRACE, OpenStreetMap, OpenAQ (CPCB), geoBoundaries

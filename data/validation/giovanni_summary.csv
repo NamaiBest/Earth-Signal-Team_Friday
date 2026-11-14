@@ -1,0 +1,29 @@
+variable,check,site,cell_lat,cell_lon,giovanni_id,months,pearson_r,mean_bias,bias_pct,rmse,giovanni_slope_decade,giovanni_ci,giovanni_p,ours_slope_decade,ours_ci,ours_p,same_verdict
+NO2,same product,Singrauli (coal power),24.125,82.625,OMNO2d_003_ColumnAmountNO2TropCloudScreened,252,1.0,-0.0,-0.0,0.0001,1.551,1.2198 to 1.8823,4.36e-13,1.551,1.2198 to 1.8823,4.36e-13,True
+NO2,same product,Korba (coal power),22.375,82.625,OMNO2d_003_ColumnAmountNO2TropCloudScreened,243,1.0,0.0001,0.0,0.0013,0.9573,0.6690 to 1.2108,1.89e-11,0.9573,0.6690 to 1.2108,1.89e-11,True
+NO2,same product,"Angul (coal, smelter)",20.875,85.125,OMNO2d_003_ColumnAmountNO2TropCloudScreened,244,1.0,-0.0,-0.0,0.0001,0.6835,0.4653 to 0.9387,3.73e-09,0.6835,0.4653 to 0.9387,3.73e-09,True
+NO2,same product,"Jharsuguda (smelter, coal)",21.875,84.125,OMNO2d_003_ColumnAmountNO2TropCloudScreened,244,1.0,0.0,0.0,0.0002,2.63,2.3531 to 2.9003,3.31e-49,2.63,2.3531 to 2.9003,3.31e-49,True
+NO2,same product,Dhanbad (coal mining),23.875,86.375,OMNO2d_003_ColumnAmountNO2TropCloudScreened,251,1.0,-0.0,-0.0,0.0001,0.7916,0.6172 to 0.9936,5.12e-16,0.7917,0.6172 to 0.9936,5.12e-16,True
+NO2,same product,New Delhi,28.625,77.125,OMNO2d_003_ColumnAmountNO2TropCloudScreened,252,1.0,-0.0,-0.0,0.0001,-0.4966,-0.7268 to -0.2736,3.38e-06,-0.4966,-0.7268 to -0.2736,3.38e-06,True
+NO2,same product,Mumbai,19.125,72.875,OMNO2d_003_ColumnAmountNO2TropCloudScreened,243,1.0,-0.0,-0.0,0.0001,-0.1192,-0.2133 to -0.0068,0.0355,-0.1192,-0.2133 to -0.0068,0.0355,True
+NO2,same product,Bengaluru,12.875,77.625,OMNO2d_003_ColumnAmountNO2TropCloudScreened,240,0.9994,0.0015,0.08,0.0231,0.016,-0.0754 to 0.1037,0.703,0.0208,-0.0726 to 0.1083,0.609,True
+NO2,same product,Jaisalmer (background),26.875,70.875,OMNO2d_003_ColumnAmountNO2TropCloudScreened,252,1.0,0.0,0.0,0.0001,0.0511,0.0037 to 0.1035,0.0405,0.0511,0.0037 to 0.1035,0.0405,True
+SO2,same product,Singrauli (coal power),24.125,82.625,OMSO2e_003_ColumnAmountSO2,191,0.9993,0.0002,0.03,0.0159,0.2148,0.1525 to 0.3010,6.52e-10,0.2196,0.1560 to 0.2976,2.17e-10,True
+SO2,same product,Korba (coal power),22.375,82.625,OMSO2e_003_ColumnAmountSO2,187,0.998,0.0007,0.16,0.0166,0.1533,0.1032 to 0.1997,6.35e-10,0.1509,0.1004 to 0.1966,5.55e-10,True
+SO2,same product,"Angul (coal, smelter)",20.875,85.125,OMSO2e_003_ColumnAmountSO2,177,0.9981,-0.0009,-0.17,0.018,0.2136,0.1643 to 0.2752,6.68e-12,0.2142,0.1629 to 0.2778,6.99e-12,True
+SO2,same product,"Jharsuguda (smelter, coal)",21.875,84.125,OMSO2e_003_ColumnAmountSO2,183,0.9975,-0.0017,-0.42,0.0195,0.2436,0.2049 to 0.2914,4.48e-23,0.2412,0.2051 to 0.2861,1.31e-22,True
+SO2,same product,Dhanbad (coal mining),23.875,86.375,OMSO2e_003_ColumnAmountSO2,181,0.9983,-0.0005,-0.34,0.0115,0.0211,-0.0133 to 0.0529,0.249,0.0185,-0.0158 to 0.0506,0.264,True
+SO2,same product,New Delhi,28.625,77.125,OMSO2e_003_ColumnAmountSO2,218,0.7252,-0.0179,-16.73,0.2715,-0.0202,-0.0515 to 0.0056,0.172,-0.0204,-0.0500 to 0.0091,0.198,True
+SO2,same product,Mumbai,19.125,72.875,OMSO2e_003_ColumnAmountSO2,198,0.9994,0.0008,0.55,0.0069,-0.0392,-0.0787 to 0.0008,0.0565,-0.0366,-0.0800 to 0.0020,0.0621,True
+SO2,same product,Bengaluru,12.875,77.625,OMSO2e_003_ColumnAmountSO2,145,0.9966,0.0002,0.86,0.0082,0.0247,-0.0037 to 0.0489,0.125,0.0248,-0.0048 to 0.0500,0.134,True
+SO2,same product,Jaisalmer (background),26.875,70.875,OMSO2e_003_ColumnAmountSO2,251,0.9995,0.0002,1.28,0.0027,-0.0078,-0.0250 to 0.0069,0.339,-0.0079,-0.0254 to 0.0066,0.344,True
+T2M,same product,Singrauli (coal power),24.0,82.5,M2T1NXSLV_5_12_4_T2M,300,1.0,-0.0001,-0.0,0.0289,-0.0795,-0.2214 to 0.0467,0.243,-0.086,-0.2167 to 0.0500,0.23,True
+T2M,same product,New Delhi,28.5,77.5,M2T1NXSLV_5_12_4_T2M,300,1.0,-0.0003,-0.0,0.0341,-0.3648,-0.6069 to -0.1415,0.000932,-0.3643,-0.6143 to -0.1476,0.0011,True
+T2M,same product,Bengaluru,13.0,77.5,M2T1NXSLV_5_12_4_T2M,300,1.0,0.0001,0.0,0.0191,0.1862,0.0585 to 0.3256,0.00582,0.1864,0.0611 to 0.3286,0.00657,True
+T2M,same product,Ludhiana (NW 'cooling'),31.0,75.625,M2T1NXSLV_5_12_4_T2M,300,1.0,-0.0001,-0.0,0.0355,-0.7477,-0.9682 to -0.5259,2.05e-10,-0.7456,-0.9600 to -0.5250,2.22e-10,True
+PRECTOTCORR,independent,Singrauli (coal power),24.0,82.5,GPM_3IMERGM_07_precipitation,297,0.9751,-0.1558,-5.04,0.9262,0.0171,0.0000 to 0.1200,0.241,0.0121,-0.0222 to 0.1105,0.401,True
+PRECTOTCORR,independent,New Delhi,28.5,77.5,GPM_3IMERGM_07_precipitation,297,0.9589,0.052,2.48,0.8227,0.0,-0.0200 to 0.0686,0.604,0.0118,-0.0176 to 0.0750,0.393,True
+PRECTOTCORR,independent,Mumbai,19.0,73.125,GPM_3IMERGM_07_precipitation,297,0.9822,0.5166,7.76,2.212,0.0141,0.0000 to 0.0400,5.58e-05,0.0333,0.0100 to 0.0667,1.74e-07,True
+PRECTOTCORR,independent,Bengaluru,13.0,77.5,GPM_3IMERGM_07_precipitation,297,0.9482,-0.1068,-4.24,0.8151,0.02,0.0000 to 0.0933,0.199,0.02,-0.0143 to 0.1250,0.319,True
+PRECTOTCORR,independent,Ludhiana (NW 'cooling'),31.0,75.625,GPM_3IMERGM_07_precipitation,297,0.9169,-0.0859,-4.09,1.0568,0.0554,-0.0343 to 0.1714,0.317,0.225,0.1091 to 0.3667,6.72e-06,False
+PRECTOTCORR,independent,Lawngtlai (NE rain jump),22.5,93.125,GPM_3IMERGM_07_precipitation,297,0.7426,-0.8896,-16.64,4.3166,0.0522,-0.0200 to 0.1760,0.177,0.9254,0.5889 to 1.3357,1.51e-21,False

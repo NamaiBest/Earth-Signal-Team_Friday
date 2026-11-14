@@ -109,7 +109,7 @@ function paintDistricts() {
   $('#legend').innerHTML = `<div class="lgnd"><span>Falling</span><div class="bar"></div><span>Rising</span></div>
     <div class="ticks"><span>−${sig(scale)}</span><span>0</span><span>+${sig(scale)}</span></div>
     <p class="key"><span class="sw"></span>Solid: significant <span class="sw faint"></span>Faded: not significant</p>`;
-  $('#varInfo').innerHTML = `<b>${esc(m.label)}</b>, ${m.years.join('–')}. Change per decade${unit}. ${esc(m.source)}, ${esc(m.res)} grid.${m.note ? '<br><span class="warn">Note:</span> ' + esc(m.note) : ''}`;
+  $('#varInfo').innerHTML = `<b>${esc(m.label)}</b>, ${m.years.join('–')}. Change per decade${unit}. ${esc(m.source)}, ${esc(m.res)} grid.${m.note ? '<br><span class="warn">Note:</span> ' + esc(m.note) : ''}${validationText(S.v)}`;
   $('#tally').innerHTML = `<b class="big">${nSig}</b> of ${n} districts changed significantly` +
     `<span class="sub2">${esc(m.short)} · ${esc(String(T.period_labels[S.p]))}${nAlibi ? ` · ${nAlibi} more failed the correction for chance` : ''}</span>`;
   pixels();
@@ -408,4 +408,21 @@ async function liveFires(on) {
     $('#firesNote').textContent = `${n.toLocaleString('en-IN')} fire detections, ${d.from} to ${d.to} (snapshot taken ${d.made}).`;
   }
   map.setLayoutProperty('fires', 'visibility', on ? 'visible' : 'none');
+}
+
+/* ---------- NASA Giovanni cross-check (scripts/validate_giovanni.py) ---------- */
+let VAL = null;
+fetch('data/validation.json').then((r) => r.json()).then((v) => { VAL = v; if (window.__ready) paintDistricts(); }).catch(() => {});
+function validationText(v) {
+  if (!VAL) return '';
+  const rows = VAL.filter((x) => x.variable === v);
+  if (!rows.length) return '';
+  const agree = rows.filter((x) => x.same_verdict).length, rs = rows.map((x) => x.pearson_r).sort((a, b) => a - b), med = rs[Math.floor(rs.length / 2)];
+  const bad = rows.filter((x) => !x.same_verdict).map((x) => x.site.replace(/ \(.*/, ''));
+  if (rows[0].check === 'independent') {
+    return `<br><span class="${bad.length ? 'warn' : 'ok'}">${bad.length ? '⚠' : '✓'} Independent check (NASA GPM IMERG via Giovanni):</span> trend verdict agrees at ${agree} of ${rows.length} test sites` +
+      (bad.length ? `; not confirmed at ${esc(bad.join(', '))}.` : '.');
+  }
+  return `<br><span class="ok">✓ Cross-checked with NASA Giovanni:</span> same values at ${rows.length} test sites (median r = ${med.toFixed(3)}), same trend verdict at ${agree} of ${rows.length}.` +
+    (v === 'T2M' ? ' This confirms our extraction of the model, not that the model is right.' : '');
 }

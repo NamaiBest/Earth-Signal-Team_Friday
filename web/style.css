@@ -137,3 +137,4 @@ details.layers label.row { margin: 6px 0; font-size: 13px; }
 #tally .big { font-size: 22px; }
 .readout { padding: 10px 12px; }
 #legend .key { margin: 6px 0 0; }
+#varInfo .ok { color: #7fd38b; }

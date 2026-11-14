@@ -68,3 +68,18 @@ body.exp .lprimary { border-radius: 3px; }
   #learnBtn { top: 56px; right: 10px; }
   body.exp #learnBtn { top: 44px; right: 10px; }
 }
+
+/* Investigate (third Learn section) */
+#learnTabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } #learnTabs button { font-size: 13px; }
+.istep { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
+.istep .n { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 8px; border-radius: 50%; background: var(--coral); color: #fff; font: 600 11px var(--mono); }
+.isearch { position: relative; } .isearch ul { position: absolute; z-index: 5; left: 0; right: 0; margin: 4px 0 0; padding: 4px; list-style: none; background: rgba(20,33,61,.97); border: 1px solid var(--glass-line); border-radius: 14px; max-height: 220px; overflow-y: auto; }
+.isearch li { padding: 6px 8px; border-radius: 8px; cursor: pointer; } .isearch li:hover { background: rgba(244,237,224,.14); } .isearch small { color: var(--dim); margin-left: 6px; }
+.itopics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.itopics button { padding: 9px 10px; text-align: left; color: var(--text); font: 14px var(--sans); cursor: pointer; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.2); }
+.itopics button[aria-pressed=true] { background: var(--cream); color: var(--navy); text-shadow: none; }
+.iclue { font-size: 13px; padding: 8px 11px; margin: 6px 0; border-left: 2px solid var(--coral); background: rgba(20,33,61,.4); border-radius: 0 10px 10px 0; }
+.ivar { display: block; width: 100%; margin-bottom: 7px; padding: 10px 12px; text-align: left; color: var(--text); font: 14px/1.4 var(--sans); cursor: pointer; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.2); }
+.ivar:hover { border-color: var(--cream); } .ivar b { font-weight: 500; } .ivar small { display: block; font-size: 12px; color: var(--dim); margin-top: 2px; } .ivar .go { float: right; color: var(--coral); font-size: 12px; }
+.iai { margin-top: 10px; font-size: 13px; line-height: 1.5; padding: 10px 12px; border-radius: 12px; background: rgba(20,33,61,.45); white-space: pre-wrap; }
+body.exp .itopics button, body.exp .ivar, body.exp .iai { border-radius: 4px; }

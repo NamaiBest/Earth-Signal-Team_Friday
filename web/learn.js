@@ -23,7 +23,7 @@
       'Crop burning, dust storms, industry and traffic raise it; rain washes it out.'],
     ALLSKY_SFC_SW_DWN: ['Sunlight reaching the ground: the solar energy that arrives at the surface after passing through clouds and haze.',
       'Less sunlight ("dimming") means more haze or cloud; it affects crops and solar power.',
-      'Calculated by NASA\'s CERES satellite instruments. Unit: kilowatt-hours per square metre per day.',
+      'Calculated by NASA\'s CERES satellite instruments. Unit: megajoules of energy per square metre per day.',
       'More haze or cloud lowers it.'],
     FIRE: ['Active fires: how many fires satellites spot burning, per 1000 km² per month.',
       'Fires release smoke and gases; crop-residue burning is a major source of winter haze in north India.',
@@ -185,7 +185,8 @@
   // ---------- render ----------
   function render() {
     document.querySelectorAll('#learnTabs button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.l === section));
-    body.innerHTML = section === 'defs' ? defs() : run ? stepView() : caseList();
+    body.innerHTML = section === 'defs' ? defs() : section === 'start' ? investigate() : run ? stepView() : caseList();
+    if (section === 'start') wireInvestigate();
     body.querySelectorAll('[data-case]').forEach((b) => { b.onclick = () => start(b.dataset.case); });
     body.querySelectorAll('[data-opt]').forEach((b) => { b.onclick = () => answer(+b.dataset.opt); });
     const nx = body.querySelector('#lNext'); if (nx) nx.onclick = next;
@@ -222,6 +223,69 @@
     if (done) h += `<div class="lnav"><button type="button" id="lNext" class="lprimary">${run.step === n - 1 ? 'Finish' : 'Next →'}</button></div>`;
     return h;
   }
+  // ---------- Investigate: where? what are you curious about? -> suggested variables ----------
+  const TOPICS = { air: ['Air I breathe', ['NO2', 'SO2', 'AOD_55', 'ALLSKY_SFC_SW_DWN']], fire: ['Fire and smoke', ['FIRE', 'AOD_55', 'NO2']],
+    green: ['Crops and forests', ['NDVI', 'GWETROOT', 'FIRE']], heat: ['Heat', ['LST', 'T2M', 'T2M_MAX']], water: ['Rain and water', ['PRECTOTCORR', 'GWETROOT', 'NDVI']] };
+  const inv = { id: null, topic: null, ai: '', busy: false };
+  const SEAS = ['year', 'winter', 'premonsoon', 'monsoon', 'postmonsoon'];
+  function verdict(id, v) { // strongest significant period, else the whole-year result
+    const rows = T.d[id] && T.d[id][v]; if (!rows) return null;
+    const hits = SEAS.map((p) => ({ p, r: rows[T.periods.indexOf(p)] })).filter((x) => x.r[2] !== null && x.r[2] < T.alpha && x.r[0] !== null);
+    const best = hits.find((x) => x.p === 'year') || hits.sort((a, b) => a.r[2] - b.r[2])[0];
+    return best ? { ...best, sig: true } : { p: 'year', r: rows[0], sig: false };
+  }
+  function clues(f) {
+    const P = f.properties, src = suspects.features.filter((s) => s.properties.district === P.label && s.properties.state === P.state), out = [];
+    if (src.length) { const by = {}; src.forEach((s) => { by[s.properties.type] = (by[s.properties.type] || 0) + 1; });
+      const top = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([t, n]) => `${n} × ${t.toLowerCase()}`).join(', ');
+      out.push(`${src.length} mapped industrial source${src.length > 1 ? 's' : ''} here (${top}). Worth checking <b>NO₂</b> and <b>SO₂</b>.`); }
+    const fr = T.d[P.id] && T.d[P.id].FIRE ? T.d[P.id].FIRE[0][3] : null;
+    if (fr !== null) { const all = Object.values(T.d).map((d) => (d.FIRE ? d.FIRE[0][3] : null)).filter((x) => x !== null).sort((a, b) => a - b), pct = all.filter((x) => x <= fr).length / all.length;
+      if (pct >= 0.8) out.push(`Fires are common here (more than in ${Math.round(pct * 100)}% of districts). Check <b>Fires</b> and <b>Haze</b>.`); }
+    const nd = T.d[P.id] && T.d[P.id].NDVI ? T.d[P.id].NDVI[0][3] : null;
+    if (nd !== null) out.push(nd >= 0.5 ? 'Very green land (forest or intensive farming). <b>Greenness</b> shows whether that is changing.' : nd <= 0.25 ? 'Dry or built-up land with little vegetation. <b>Land temperature</b> and <b>Haze</b> are good first checks.' : '');
+    return out.filter(Boolean);
+  }
+  function investigate() {
+    const f = inv.id && districts.features.find((x) => x.properties.id === inv.id);
+    let h = `<p class="lintro">Answer two questions and we suggest what to look at first, based on what the data shows about that place.</p>
+      <p class="istep"><span class="n">1</span>Where do you want to investigate?</p>
+      <div class="isearch"><input id="iQ" type="search" placeholder="Type a district, e.g. Pune" autocomplete="off" value="${f ? esc(f.properties.label) : ''}" aria-label="District"><ul id="iR" hidden></ul></div>
+      <p class="istep"><span class="n">2</span>What are you curious about?</p>
+      <div class="itopics">${Object.entries(TOPICS).map(([k, t]) => `<button type="button" data-topic="${k}" aria-pressed="${inv.topic === k}">${t[0]}</button>`).join('')}</div>`;
+    if (!f || !inv.topic) return h + '<p class="lsmall">Pick a place and a topic to get suggestions.</p>';
+    h += `<p class="istep"><span class="n">3</span>Start with these in ${esc(f.properties.label)}</p>` + clues(f).map((c) => `<p class="iclue">${c}</p>`).join('');
+    const list = TOPICS[inv.topic][1].filter((v) => T.vars[v]).map((v) => ({ v, x: verdict(f.properties.id, v) })).filter((o) => o.x && o.x.r[0] !== null)
+      .sort((a, b) => (b.x.sig - a.x.sig) || ((a.x.r[2] ?? 1) - (b.x.r[2] ?? 1)));
+    h += list.map(({ v, x }) => { const m = T.vars[v];
+      return `<button type="button" class="ivar" data-inv="${v}" data-p="${x.p}"><span class="go">Investigate →</span><b>${esc(m.short)}</b> ${x.sig ? `is <span class="${x.r[0] > 0 ? 'up' : 'down'}">${x.r[0] > 0 ? 'rising' : 'falling'}</span> significantly` : 'shows no significant trend'}
+        <small>${x.sig ? `${signed(x.r[0])}${unit(v)} per decade · ${esc(String(T.period_labels[x.p]))} · q ${pq(x.r[2])}` : 'An interesting result too: is it steady, or just too noisy to tell?'}${m.kind === 'model' ? ' · model data, not yet validated' : ''}</small></button>`; }).join('');
+    h += `<div class="lnav" style="justify-content:flex-start"><button type="button" id="iAI" class="lback" ${inv.busy ? 'disabled' : ''}>${inv.busy ? 'Asking…' : '✦ Ask AI which to check first'}</button></div>` + (inv.ai ? `<div class="iai">${esc(inv.ai)}</div>` : '');
+    return h;
+  }
+  function wireInvestigate() {
+    const q = $l('#iQ'), r = $l('#iR');
+    q.oninput = () => { let t = q.value.trim().toLowerCase(); if (t.length >= 2 && !districts.features.some((f) => f.properties.label.toLowerCase().includes(t))) t = window.placeAlias(t); r.innerHTML = ''; if (t.length < 2) { r.hidden = true; return; }
+      const hits = districts.features.filter((f) => f.properties.label.toLowerCase().includes(t)).sort((a, b) => a.properties.label.toLowerCase().indexOf(t) - b.properties.label.toLowerCase().indexOf(t)).slice(0, 8);
+      for (const f of hits) { const li = document.createElement('li'); li.innerHTML = `${esc(f.properties.label)}<small>${esc(f.properties.state)}</small>`; li.onclick = () => { inv.id = f.properties.id; inv.ai = ''; select(inv.id, true); render(); }; r.append(li); }
+      r.hidden = !hits.length; };
+    q.onkeydown = (e) => { if (e.key === 'Enter' && r.firstChild) r.firstChild.click(); };
+    body.querySelectorAll('[data-topic]').forEach((b) => { b.onclick = () => { inv.topic = b.dataset.topic; inv.ai = ''; render(); }; });
+    body.querySelectorAll('[data-inv]').forEach((b) => { b.onclick = () => { setView('districts'); syncView('districts'); pickVar(b.dataset.inv); pickSeason(b.dataset.p); select(inv.id, true); }; });
+    const ai = $l('#iAI'); if (ai) ai.onclick = askAI;
+  }
+  async function askAI() {
+    const f = districts.features.find((x) => x.properties.id === inv.id); inv.busy = true; render();
+    const facts = { place: { district: f.properties.label, state: f.properties.state }, topic: TOPICS[inv.topic][0],
+      issues: TOPICS[inv.topic][1].filter((v) => T.vars[v]).map((v, i) => { const x = verdict(f.properties.id, v); return { id: `I${i + 1}`, variable: T.vars[v].label, kind: T.vars[v].kind, significant: x.sig, season: String(T.period_labels[x.p]), change_per_decade: x.r[0], ci95_per_decade: [x.r[4], x.r[5]], q_value: x.r[2], unit: T.vars[v].unit || 'unitless' }; }),
+      sources_in_district: suspects.features.filter((s) => s.properties.district === f.properties.label).length };
+    try { const res = await fetch('api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ mode: 'ask', facts,
+        question: 'I am a student. In plain words and under 120 words, which of these variables should I investigate first in this district and why? Cite fact IDs. Mention if a variable is model data that needs checking.' }) });
+      const j = await res.json(); inv.ai = res.ok ? j.text : `AI unavailable: ${j.message || res.status}. The suggestions above do not need AI.`; }
+    catch (e) { inv.ai = 'AI unavailable right now. The suggestions above do not need AI.'; }
+    inv.busy = false; render();
+  }
+
   function defs() {
     const groups = [['Air quality', ['NO2', 'SO2', 'AOD_55', 'ALLSKY_SFC_SW_DWN']], ['Land and fire', ['FIRE', 'NDVI', 'LST']], ['Climate model · not yet validated', ['T2M', 'T2M_MAX', 'PRECTOTCORR', 'GWETROOT']]];
     let h = '<p class="lintro">Tap a name to show it on the map.</p>';

@@ -64,7 +64,7 @@ VARS = {
                 end=2022, note="Ends 2022: from 2023 Terra passes over earlier in the day, which reads as false cooling. Daytime cooling before 2023 may be partly real (greening, haze dimming) and partly instrument drift: validate before quoting."),
     "NDVI": dict(file=RAW / "modis" / "NDVI_monthly.npz", label="Vegetation greenness (NDVI)", short="Greenness",
                  unit="NDVI", rel=True, source="NASA Terra MODIS (MOD13C2 v061)", res="~25 km", kind="satellite"),
-    "ALLSKY_SFC_SW_DWN": dict(file=POWER, label="Sunlight reaching the ground", short="Sunlight", unit="kWh/m²/day", rel=True,
+    "ALLSKY_SFC_SW_DWN": dict(file=POWER, label="Sunlight reaching the ground", short="Sunlight", unit="MJ/m²/day", rel=True,
                               source="NASA CERES SYN1deg satellite via NASA POWER", res="~100 km", kind="satellite"),
     "T2M": dict(file=POWER, label="Air temperature", short="Air temp", unit="°C", rel=False,
                 source="NASA MERRA-2 reanalysis via NASA POWER", res="~50 km", kind="model"),

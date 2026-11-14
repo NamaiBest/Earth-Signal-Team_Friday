@@ -170,7 +170,8 @@ function buildControls() {
   const items = districts.features.map((f) => ({ id: f.properties.id, name: f.properties.label, state: f.properties.state }));
   const states = [...new Set(items.map((i) => i.state))].map((s) => ({ state: s, name: s, isState: true }));
   input.oninput = () => {
-    const q = input.value.trim().toLowerCase();
+    let q = input.value.trim().toLowerCase();
+    if (q.length >= 2 && ![...states, ...items].some((i) => i.name.toLowerCase().includes(q))) q = placeAlias(q); // e.g. Bengaluru -> Bangalore
     list.innerHTML = '';
     if (q.length < 2) { list.hidden = true; return; }
     const hits = [...states, ...items].filter((i) => i.name.toLowerCase().includes(q))
@@ -434,3 +435,9 @@ function validationText(v) {
   return `<br><span class="ok">✓ Cross-checked with NASA Giovanni:</span> same values at ${rows.length} test sites (median r = ${med.toFixed(3)}), same trend verdict at ${agree} of ${rows.length}.` +
     (v === 'T2M' ? ' This confirms our extraction of the model, not that the model is right.' : '');
 }
+
+/* Search understands current city names; the boundary data uses the older official spellings. */
+const ALIASES = { bengaluru: 'bangalore', mysuru: 'mysore', gurugram: 'gurgaon', prayagraj: 'allahabad', belagavi: 'belgaum', kalaburagi: 'gulbarga',
+  vijayapura: 'bijapur', ballari: 'bellary', shivamogga: 'shimoga', tumakuru: 'tumkur' };
+function placeAlias(q) { for (const [now, old] of Object.entries(ALIASES)) if (q.length >= 3 && now.startsWith(q.slice(0, now.length)) && now.startsWith(q)) return old.slice(0, Math.max(3, Math.min(old.length, q.length))); return q; }
+window.placeAlias = placeAlias;

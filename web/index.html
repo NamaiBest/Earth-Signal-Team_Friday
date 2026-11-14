@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="policy.css">
 <link rel="stylesheet" href="learn.css">
 <link rel="stylesheet" href="menus.css">
+<link rel="stylesheet" href="detective.css">
 </head>
 <body>
 <div id="map"></div>
@@ -80,12 +81,8 @@
 <aside id="policy" class="panel" hidden aria-label="Policy workspace">
   <header>
     <h1>Policy workspace</h1>
-    <p class="sub">Where problems are worsening in your jurisdiction, and which sources sit there.</p>
+    <p class="sub">From verdict to action: confirmed problems in your jurisdiction, the sources nearby, and an AI brief that cites every figure.</p>
   </header>
-  <div id="pVersion" class="seg" role="group" aria-label="Policy workspace version">
-    <button type="button" data-ver="v1" aria-pressed="true">v1 · Rules<small>ranked evidence</small></button>
-    <button type="button" data-ver="v2" aria-pressed="false">v2 · AI-assisted<small>brief + ask, cited</small></button>
-  </div>
   <div class="search">
     <input id="pScope" type="search" placeholder="Choose a state or district" autocomplete="off" aria-label="Jurisdiction">
     <ul id="pResults" hidden></ul>
@@ -122,5 +119,6 @@
 <script src="policy.js"></script>
 <script src="readability.js"></script>
 <script src="learn.js"></script>
+<script src="detective.js"></script>
 </body>
 </html>

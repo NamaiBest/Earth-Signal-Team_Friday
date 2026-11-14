@@ -4,9 +4,8 @@
 (function () {
   const $p = (s) => document.querySelector(s);
   let P = null, mode = 'detect', scope = null; // scope: { kind: 'state'|'district', name, ids:Set }
-  let ver = 'v1', ai = { text: '', meta: '', busy: false, answer: '', q: '' };
-  try { ver = new URLSearchParams(location.search).get('policy') || localStorage.getItem('earthsignal-policy') || 'v1'; } catch (e) { /* storage blocked */ }
-  if (ver !== 'v2') ver = 'v1';
+  let ver = 'v2', ai = { text: '', meta: '', busy: false, answer: '', q: '' }; // AI-assisted workspace only
+  let focus = null, pulse = 0;
   const setVer = (v) => {
     ver = v; ai = { text: '', meta: '', busy: false, answer: '', q: '' };
     try { localStorage.setItem('earthsignal-policy', v); } catch (e) { /* ignore */ }
@@ -35,7 +34,9 @@
       if (!scope) setScope('state', 'Delhi');
       else render();
     } else {
-      for (const l of ['p-scope', 'p-air']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'none');
+      for (const l of ['p-scope', 'p-air', 'p-hit', 'p-glow']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'none');
+      focus = null; cancelAnimationFrame(pulse);
+      if (map.getPitch() && !window.c3d && !document.body.classList.contains('exp')) map.easeTo({ pitch: 0, bearing: 0, duration: 700 });
       map.setPaintProperty('d-fill', 'fill-color', ['get', 'c']);
       paintDistricts();
     }
@@ -64,7 +65,8 @@
 
   function setScope(kind, name, id) {
     const ids = new Set(districts.features.filter((f) => (kind === 'state' ? f.properties.state === name : f.properties.id === id)).map((f) => f.properties.id));
-    scope = { kind, name, ids };
+    scope = { kind, name, ids }; focus = null; cancelAnimationFrame(pulse);
+    for (const l of ['p-hit', 'p-glow']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', 'none');
     ai = { text: '', meta: '', busy: false, answer: '', q: '' };
     input.value = name;
     render(true);
@@ -122,7 +124,7 @@
       <div><b>${c.issues.length}</b><span>issues</span></div><div><b>${c.sources.length}</b><span>sources</span></div></div>`;
 
     if (ver === 'v2') h += aiBlock();
-    h += `<h3>Issues <span class="hint">worsening and significant, ranked</span></h3>`;
+    h += `<h3>Confirmed problems <span class="hint">worsening, significant, ranked by severity</span></h3>`;
     h += c.issues.length ? '<ol class="issues">' + c.issues.slice(0, 15).map((x) => {
       const m = T.vars[x.v];
       return `<li id="fact-I${c.issues.indexOf(x) + 1}"><button type="button" data-id="${x.id}" data-v="${x.v}" data-p="${x.p}">
@@ -165,9 +167,32 @@
     const i = Object.keys(T.vars).indexOf(v);
     if (i >= 0) window.pickVar(v);
     window.pickSeason(p);
+    focus = id;
     paintScope(last, false);
-    select(id, true);
+    select(id, false);
+    document.querySelectorAll('ol.issues button').forEach((b) => b.classList.toggle('on', b.dataset.id === id && b.dataset.v === v && b.dataset.p === p));
+    // swoop in at an angle, raise the district and pulse its boundary in coral
+    const f = districts.features.find((x) => x.properties.id === id);
+    const cam = map.cameraForBounds(bounds([f]), { padding: { top: 90, bottom: 90, left: 400, right: 460 } }) || { center: [f.properties.lon, f.properties.lat], zoom: 7 };
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    map.flyTo({ center: cam.center, zoom: Math.min(cam.zoom, 7.6), pitch: still ? 0 : 52, bearing: still ? 0 : -18, duration: still ? 0 : 2600, curve: 1.7, essential: true });
+    const hit = ['==', ['get', 'id'], id];
+    map.setFilter('p-hit', hit); map.setFilter('p-glow', hit);
+    for (const l of ['p-hit', 'p-glow']) map.setLayoutProperty(l, 'visibility', 'visible');
+    cancelAnimationFrame(pulse);
+    if (still) return;
+    const t0 = performance.now();
+    const step = (t) => {
+      if (!map.getLayer('p-glow')) return;
+      const k = 0.5 + 0.5 * Math.sin((t - t0) / 420);
+      map.setPaintProperty('p-glow', 'line-width', 6 + 12 * k);
+      map.setPaintProperty('p-glow', 'line-opacity', 0.55 - 0.35 * k);
+      if (t - t0 < 9000) pulse = requestAnimationFrame(step);
+      else { map.setPaintProperty('p-glow', 'line-width', 8); map.setPaintProperty('p-glow', 'line-opacity', 0.4); }
+    };
+    pulse = requestAnimationFrame(step);
   }
+  window.policyRepaint = () => { if (mode === 'policy' && last) paintScope(last, false); };
 
   // ---------- map ----------
   function paintScope(c, fly) {
@@ -179,6 +204,8 @@
       f.properties.pc = s ? `rgb(${mix([244, 237, 224], [255, 107, 91], Math.min(1, s / 100)).join(',')})` : '#3b4868';
       f.properties.o = inArea.has(id) ? (s ? 0.25 + 0.6 * (s / 100) : 0.18) : 0.04;
       f.properties.h = 0;
+      f.properties.pm = true; // classic 3D: columns by severity, and the focused district always rises
+      f.properties.h3 = Math.max(window.c3d && inArea.has(id) ? s / 100 : 0, id === focus ? 0.45 : 0);
     }
     map.getSource('districts').setData(districts);
     map.setPaintProperty('d-fill', 'fill-color', ['get', 'pc']);
@@ -188,6 +215,9 @@
     if (!map.getLayer('p-scope')) {
       map.addLayer({ id: 'p-air', type: 'line', source: 'districts', filter: airFilter, paint: { 'line-color': VIOLET, 'line-width': 0.8, 'line-dasharray': [2, 2], 'line-opacity': 0.6 } }, 'd-sel');
       map.addLayer({ id: 'p-scope', type: 'line', source: 'districts', filter: scopeFilter, paint: { 'line-color': VIOLET, 'line-width': 2 } }, 'd-sel');
+      const none = ['==', ['get', 'id'], ''];
+      map.addLayer({ id: 'p-glow', type: 'line', source: 'districts', filter: none, paint: { 'line-color': '#FF6B5B', 'line-width': 8, 'line-blur': 8, 'line-opacity': 0.4 } });
+      map.addLayer({ id: 'p-hit', type: 'line', source: 'districts', filter: none, paint: { 'line-color': '#FF6B5B', 'line-width': 3 } });
     }
     map.setFilter('p-scope', scopeFilter); map.setFilter('p-air', airFilter);
     for (const l of ['p-scope', 'p-air']) map.setLayoutProperty(l, 'visibility', 'visible');
@@ -250,7 +280,7 @@
     if (q) q.onkeydown = (e) => { if (e.key === 'Enter') doAsk(); };
     $p('#pBody').querySelectorAll('.cite').forEach((b) => { b.onclick = () => cite(c, b.dataset.f); });
   }
-  function alertBox(msg) { ai.busy = false; render(); const box = document.createElement('div'); box.className = 'alert'; box.innerHTML = `<b>AI unavailable.</b> ${esc(msg)}<small>The rules-based brief still works: use Download policy brief.</small>`; $p('.aibox').insertBefore(box, $p('.aibox .pbtns')); }
+  function alertBox(msg) { ai.busy = false; render(); const box = document.createElement('div'); box.className = 'alert'; box.innerHTML = `<b>AI unavailable.</b> ${esc(msg)}<small>The evidence below still works: use Download policy brief.</small>`; $p('.aibox').insertBefore(box, $p('.aibox .pbtns')); }
   function cite(c, f) {
     const k = f[0], i = +f.slice(1) - 1;
     if (k === 'I' && c.issues[i]) openIssue(c.issues[i].id, c.issues[i].v, c.issues[i].p);

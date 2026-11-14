@@ -1,0 +1,56 @@
+/* Classic interface extras: readout strip, target cursor, 2D / 3D switch, verdict stamp,
+   and a calmer, more readable Policy workspace. Loaded last. */
+
+/* ---------- readout strip ---------- */
+#cstrip {
+  position: fixed; left: calc(50% - 70px); bottom: 10px; transform: translateX(-50%); z-index: 3; display: flex; gap: 16px; padding: 6px 16px;
+  font: 11px var(--mono); letter-spacing: .08em; color: rgba(244,237,224,.55); white-space: nowrap; pointer-events: none;
+  background: rgba(20,33,61,.42); border: 1px solid rgba(244,237,224,.14); border-radius: 999px;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+#cstrip b { display: inline-block; min-width: 58px; margin-left: 6px; font-weight: 500; color: rgba(244,237,224,.88); }
+
+/* ---------- target cursor ---------- */
+#creticle { position: fixed; z-index: 1; left: 0; top: 0; width: 24px; height: 24px; margin: -12px 0 0 -12px; pointer-events: none;
+  border: 1px solid rgba(255,107,91,.5); border-radius: 50%; opacity: 0; transition: opacity .2s; }
+#creticle.live { opacity: 1; }
+#creticle::before, #creticle::after { content: ""; position: absolute; background: rgba(255,107,91,.55); }
+#creticle::before { left: 11px; top: -7px; width: 1px; height: 37px; }
+#creticle::after { top: 11px; left: -7px; height: 1px; width: 37px; }
+
+/* ---------- 2D / 3D switch ---------- */
+#dim3 { position: fixed; right: 58px; bottom: 34px; z-index: 3; display: flex; padding: 3px;
+  background: rgba(20,33,61,.55); border: 1px solid rgba(244,237,224,.22); border-radius: 999px;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: right .25s; }
+#dim3 button { padding: 5px 13px; font: 500 12px var(--mono); color: var(--dim); background: none; border: 0; border-radius: 999px; cursor: pointer; }
+#dim3 button[aria-pressed=true] { color: #14213D; background: var(--text); }
+#dim3 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#casefile:not([hidden]) ~ #dim3 { right: 528px; }
+
+/* ---------- verdict stamp in the case file ---------- */
+.stamp { display: inline-flex; flex-direction: column; gap: 1px; margin: 12px 0 10px; padding: 8px 14px 9px; border: 2px solid currentColor; border-radius: 10px;
+  transform: rotate(-1.5deg); color: var(--dim); }
+.stamp span { font: 500 10px var(--mono); letter-spacing: .22em; text-transform: uppercase; opacity: .8; }
+.stamp b { font: 600 19px var(--sans); letter-spacing: .04em; text-transform: uppercase; }
+.stamp small { font: 12px var(--sans); color: var(--text); opacity: .85; }
+.stamp.ok { color: #FF6B5B; background: rgba(255,107,91,.10); }
+.stamp.lead { color: #FFD166; background: rgba(255,209,102,.08); }
+.stamp.none { color: rgba(244,237,224,.6); }
+#tally .lead { font-weight: 500; color: #FFD166; }
+
+/* ---------- Policy workspace: one readable type family ---------- */
+ol.issues .tx, .alert, #policy .src > span:last-child { font-family: var(--sans); font-size: 14.5px; line-height: 1.4; letter-spacing: 0; }
+ol.issues .tx b, .alert b, #policy .src b { font-weight: 600; }
+ol.issues small, .alert small, #policy .src small { font: 12.5px/1.45 var(--sans); letter-spacing: 0; color: var(--dim); margin-top: 3px; }
+ol.issues button { padding: 10px 6px; border-radius: 10px; transition: background .2s, box-shadow .2s; }
+ol.issues button.on { background: rgba(255,107,91,.14); box-shadow: inset 3px 0 0 #FF6B5B; }
+.sc { flex: 0 0 38px; height: 24px; font-size: 12px; }
+.sc::before { background: rgba(255,107,91,.45); }
+.aitext { font-size: 14px; line-height: 1.55; }
+.pstat span { font-size: 12px; }
+
+/* ---------- recording mode (?clean=1) ---------- */
+body.clean #learnBtn, body.clean #uiToggle { display: none !important; }
+
+@media (max-width: 820px) { #cstrip, #creticle, #dim3 { display: none; } }
+@media (prefers-reduced-motion: reduce) { #creticle, #dim3, ol.issues button { transition: none; } }

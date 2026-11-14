@@ -104,13 +104,15 @@ function paintDistricts() {
   let nSig = 0, nAlibi = 0, n = 0;
   for (const f of districts.features) {
     const r = rec(f.properties.id, S.v, p);
-    if (!r || r[0] === null) { f.properties.c = '#3b4868'; f.properties.o = 0.05; f.properties.h = 0; continue; }
+    if (!r || r[0] === null) { f.properties.c = '#3b4868'; f.properties.o = 0.05; f.properties.h = 0; f.properties.h3 = 0; f.properties.pm = false; continue; }
     n++;
     const s = isSig(r);
     if (s) nSig++; else if (r[1] !== null && r[1] < T.alpha) nAlibi++;
     f.properties.c = colour(r[0]);
     f.properties.o = s ? 0.72 : 0.12; // significance = opacity
     f.properties.h = s ? Math.min(1, Math.abs(r[0]) / scale) : 0; // experimental UI: column height
+    f.properties.h3 = window.c3d && S.view !== 'pixels' ? f.properties.h : 0; // classic UI: 3D switch
+    f.properties.pm = false;
   }
   if (map && map.getSource('districts')) map.getSource('districts').setData(districts);
   const m = T.vars[S.v], unit = m.unit ? ' ' + esc(m.unit) : '';
@@ -118,8 +120,8 @@ function paintDistricts() {
     <div class="ticks"><span>−${sig(scale)}</span><span>0</span><span>+${sig(scale)}</span></div>
     <p class="key"><span class="sw"></span>Solid: significant <span class="sw faint"></span>Faded: not significant</p>`;
   $('#varInfo').innerHTML = `<b>${esc(m.label)}</b>, ${m.years.join('–')}. Change per decade${unit}. ${esc(m.source)}, ${esc(m.res)} grid.${m.note ? '<br><span class="warn">Note:</span> ' + esc(m.note) : ''}${validationText(S.v)}`;
-  $('#tally').innerHTML = `<b class="big">${nSig}</b> of ${n} districts changed significantly` +
-    `<span class="sub2">${esc(m.short)} · ${esc(String(T.period_labels[S.p]))}${nAlibi ? ` · ${nAlibi} more failed the correction for chance` : ''}</span>`;
+  $('#tally').innerHTML = `<b class="big">${nSig}</b> of ${n} districts: change confirmed` +
+    `<span class="sub2">${esc(m.short)} · ${esc(String(T.period_labels[S.p]))}${nAlibi ? ` · <b class="lead">${nAlibi} false lead${nAlibi > 1 ? 's' : ''} dismissed</b>` : ''}</span>`;
   pixels();
   if (window.expRefresh) window.expRefresh({ nSig, nAlibi, n });
 }
@@ -226,6 +228,14 @@ async function select(id, fly) {
   await caseFile(id);
 }
 const seriesCache = {};
+// Verdict stamp for the variable and season currently on the map.
+function stamp(d) {
+  const r = d[S.v] && d[S.v][pIndex()], m = T.vars[S.v], what = `${esc(m.short)} · ${esc(String(T.period_labels[S.p]))}`;
+  if (!r || r[0] === null) return `<div class="stamp none"><span>Verdict</span><b>No record</b><small>${what}</small></div>`;
+  if (isSig(r)) return `<div class="stamp ok"><span>Verdict</span><b>Change confirmed</b><small>${what} · ${r[0] > 0 ? 'rising' : 'falling'}</small></div>`;
+  if (r[1] !== null && r[1] < T.alpha) return `<div class="stamp lead"><span>Verdict</span><b>False lead dismissed</b><small>${what} · looked real, failed the correction</small></div>`;
+  return `<div class="stamp none"><span>Verdict</span><b>Not proven</b><small>${what} · no significant change</small></div>`;
+}
 async function caseFile(id) {
   const f = districts.features.find((x) => x.properties.id === id), P = f.properties, d = T.d[id] || {};
   const ser = seriesCache[id] || (seriesCache[id] = await fetch(`data/series/${id}.json`).then((r) => r.json()).catch(() => null));
@@ -258,6 +268,7 @@ async function caseFile(id) {
     <span class="stat">${esc(s.properties.type)}${s.properties.fuel ? ' · ' + esc(s.properties.fuel) : ''} · ${tonnes(s.properties.co2e_t)} CO₂e/yr${extra}</span></div>`;
 
   let h = `<p class="cf-title">${esc(P.name)}</p><p class="cf-meta">${esc(P.state)} · ${Number(P.area_km2).toLocaleString('en-IN')} km² · case file</p>
+    ${stamp(d)}
     <div class="verdict"><b>${clues.length} of ${vars.length}</b> variables show a significant change over their NASA record.
     ${alibis.length ? `<b>${alibis.length}</b> apparent change${alibis.length > 1 ? 's' : ''} did not survive the test.` : ''}</div>`;
 

@@ -1,0 +1,70 @@
+/* Learn view (definitions + guided cases). Button sits in the top-right; panel replaces the left panel. */
+#learnBtn {
+  position: fixed; top: 12px; right: 210px; z-index: 6; display: flex; align-items: center; gap: 7px; padding: 7px 14px 7px 8px;
+  color: var(--text); font: 500 13px var(--sans); cursor: pointer;
+  background: linear-gradient(160deg, rgba(244,237,224,.16), rgba(244,237,224,.04)), var(--panel);
+  border: 1px solid rgba(255,255,255,.34); border-radius: 999px;
+  -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,.45), 0 12px 30px rgba(6,10,24,.4);
+}
+#learnBtn .ico { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--coral); color: #fff; font: 600 12px var(--mono); }
+#learnBtn[aria-pressed=true] { background: var(--cream); color: var(--navy); }
+body.exp #learnBtn { top: 5px; padding: 5px 12px 5px 6px; border-radius: 3px; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+body.exp #learnBtn .ico { border-radius: 2px; width: 18px; height: 18px; }
+body.exp #topbar { padding-right: 545px; }
+
+#learn { left: 12px; }
+body.exp #learn { left: 10px; width: 340px; }
+#learnTabs { margin-top: 12px; }
+.lintro { font-size: 13px; color: var(--dim); margin: 12px 0 8px; }
+.lcase { display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 8px; padding: 12px; text-align: left; color: var(--text); cursor: pointer; font: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.2); border-radius: 16px; box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
+.lcase:hover { border-color: rgba(255,255,255,.4); }
+.lcase .ln { flex: 0 0 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--coral); color: #fff; font: 600 13px var(--mono); }
+.lcase b { display: block; font-weight: 500; font-size: 15px; }
+.lcase small { display: block; color: var(--dim); font-size: 12px; margin-top: 1px; }
+.lcase .go { margin-left: auto; font-size: 12px; color: var(--coral); white-space: nowrap; }
+
+.lhead { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.lback { background: none; border: 0; color: var(--dim); font: 13px var(--sans); cursor: pointer; padding: 4px 0; }
+.ldots { display: flex; gap: 5px; }
+.ldots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(244,237,224,.22); }
+.ldots span.done { background: rgba(244,237,224,.7); }
+.ldots span.now { background: var(--coral); box-shadow: 0 0 8px var(--coral); }
+.ltitle { margin: 10px 0 8px; font-size: 13px; }
+.lcard { padding: 14px; border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.22); box-shadow: inset 0 1px 0 rgba(255,255,255,.22); font-size: 14px; line-height: 1.55; }
+.lcard p { margin: 0; }
+.lq { font-family: "M PLUS Code Latin", var(--sans); font-size: 15px; margin-bottom: 12px !important; }
+.lopts { display: grid; gap: 7px; }
+.lopts button { padding: 10px 12px; text-align: left; color: var(--text); font: 14px/1.4 var(--sans); cursor: pointer; border-radius: 12px;
+  background: rgba(20,33,61,.35); border: 1px solid rgba(255,255,255,.2); }
+.lopts button:hover:not([disabled]) { border-color: var(--cream); }
+.lopts button.right { background: rgba(127,211,139,.22); border-color: #7fd38b; }
+.lopts button.wrong { background: rgba(255,107,91,.22); border-color: var(--coral); }
+.lopts button.dim { opacity: .5; }
+.lopts button[disabled] { cursor: default; }
+.lwhy { margin-top: 12px !important; font-size: 13px; padding: 10px 12px; border-radius: 12px; background: rgba(20,33,61,.45); }
+.lwhy.ok b { color: #7fd38b; } .lwhy.no b { color: #FF8A7C; }
+.lnav { display: flex; justify-content: flex-end; margin-top: 12px; }
+.lprimary { padding: 9px 18px; color: #fff; background: var(--coral); border: 0; border-radius: 999px; font: 500 14px var(--sans); cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 18px rgba(255,107,91,.35); }
+.lcard.done { text-align: center; }
+.lscore { font: 600 34px var(--mono); margin-bottom: 4px !important; }
+.lsmall { font-size: 12.5px; color: var(--dim); margin: 8px 0 0; }
+
+.ldef { border-bottom: 1px solid rgba(244,237,224,.12); padding: 8px 0; }
+.ldef summary { cursor: pointer; list-style: none; display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: baseline; }
+.ldef summary::-webkit-details-marker { display: none; }
+.lname { padding: 3px 9px; color: var(--navy); background: var(--cream); border: 0; border-radius: 999px; font: 500 12.5px var(--sans); cursor: pointer; white-space: nowrap; text-shadow: none; }
+.lone { font-size: 13px; line-height: 1.45; }
+.lterm { font-weight: 500; }
+.ldef dl { margin: 8px 0 2px; font-size: 13px; line-height: 1.5; }
+.ldef dt { color: var(--coral); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; margin-top: 6px; }
+.ldef dd { margin: 1px 0 0; }
+
+body.exp .lcase, body.exp .lcard, body.exp .lopts button, body.exp .lwhy { border-radius: 4px; }
+body.exp .lprimary { border-radius: 3px; }
+@media (max-width: 820px) {
+  #learnBtn { top: 56px; right: 10px; }
+  body.exp #learnBtn { top: 44px; right: 10px; }
+}

@@ -201,3 +201,8 @@ section.step h2 .n { background: var(--coral); color: #fff; }
 .pbtns button:first-child, .ask button { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 18px rgba(255,107,91,.35); }
 body { text-shadow: 0 1px 2px rgba(10,18,36,.35); }
 .vrow[aria-pressed=true], .seg button[aria-pressed=true], #modeTabs button[aria-selected=true], .pbtns button, .ask button, .cite, .fid, .tag { text-shadow: none; }
+
+/* readability: panels over bright solid districts get a thicker tint (readability.js) */
+.panel { transition: background-color .35s ease; }
+.panel.on-bright { --panel: rgba(20, 33, 61, .78); }
+body.exp .panel.on-bright { --panel: rgba(16, 27, 52, .8); }

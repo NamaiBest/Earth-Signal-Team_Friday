@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="exp.css">
 <link rel="stylesheet" href="policy.css">
+<link rel="stylesheet" href="learn.css">
 </head>
 <body>
 <div id="map"></div>
@@ -99,10 +100,24 @@
 </aside>
 
 <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+<button id="learnBtn" type="button" aria-pressed="false" title="Definitions and guided detective cases"><span class="ico" aria-hidden="true">?</span><span class="lbl">Learn</span></button>
+<aside id="learn" class="panel" hidden aria-label="Learn: definitions and guided cases">
+  <header>
+    <h1>Become a data detective</h1>
+    <p class="sub">What the variables mean, and three short cases where you make the calls.</p>
+  </header>
+  <div id="learnTabs" class="seg" role="tablist" aria-label="Learn sections">
+    <button type="button" role="tab" data-l="cases" aria-pressed="true">Cases<small>guided, with questions</small></button>
+    <button type="button" role="tab" data-l="defs" aria-pressed="false">Definitions<small>variables and terms</small></button>
+  </div>
+  <div id="learnBody"></div>
+</aside>
 <button id="uiToggle" type="button" aria-pressed="false" title="Switch between the classic and experimental interface"><span class="led"></span><span class="lbl">Experimental UI</span></button>
 
 <script src="app.js"></script>
 <script src="exp.js"></script>
 <script src="policy.js"></script>
+<script src="readability.js"></script>
+<script src="learn.js"></script>
 </body>
 </html>

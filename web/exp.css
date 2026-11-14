@@ -5,15 +5,15 @@
   padding: 7px 12px; color: var(--text); background: var(--panel); border: 1px solid var(--line);
   border-radius: 999px; font: 12px var(--sans); cursor: pointer; backdrop-filter: blur(8px);
 }
-#uiToggle .led { width: 8px; height: 8px; border-radius: 50%; background: #4a5565; }
+#uiToggle .led { width: 8px; height: 8px; border-radius: 50%; background: rgba(244,237,224,.3); }
 #uiToggle[aria-pressed=true] .led { background: var(--sci); box-shadow: 0 0 8px var(--sci); }
 .exp-only { display: none; }
 
 body.exp {
-  --sci: #7fe3d4; --sci-dim: rgba(127, 227, 212, .28); --panel: rgba(6, 10, 14, .9); --line: #1b2a33;
-  --accent: #7fe3d4; --bar: 40px; --foot: 34px;
+  --sci: #FF6B5B; --sci-dim: rgba(127, 227, 212, .28); --panel: rgba(16, 27, 52, .6); --line: rgba(244,237,224,.14);
+  --accent: #FF6B5B; --bar: 40px; --foot: 34px;
 }
-:root { --sci: #7fe3d4; }
+:root { --sci: #FF6B5B; }
 body.exp .exp-only { display: revert; }
 body.exp .classic-only { display: none !important; }
 
@@ -36,14 +36,14 @@ body.exp .panel { border-radius: 2px; top: calc(var(--bar) + 10px); bottom: calc
 body.exp #controls { width: 318px; left: 10px; padding: 12px; font-size: 13px; }
 body.exp #controls > header { display: none; }
 body.exp .search { margin-top: 0; }
-body.exp input[type=search], body.exp select, body.exp input[type=date] { border-radius: 2px; font-family: var(--mono); font-size: 12px; background: #080d12; }
+body.exp input[type=search], body.exp select, body.exp input[type=date] { border-radius: 2px; font-family: var(--mono); font-size: 12px; background: rgba(10,18,36,.45); }
 body.exp section { position: relative; margin-top: 14px; padding: 14px 0 0; border-top: 1px solid var(--line); }
 body.exp section::before { content: ""; position: absolute; top: -1px; left: 0; width: 26px; height: 1px; background: var(--sci); }
 body.exp h2 { font: 500 10px var(--mono); letter-spacing: .2em; color: var(--sci); }
 body.exp h2 .hint { font-size: 10px; letter-spacing: .04em; }
 body.exp #vars { display: none; }
 body.exp .chips button { border-radius: 2px; font-family: var(--mono); font-size: 11px; background: transparent; }
-body.exp .chips button[aria-pressed=true] { background: var(--sci); border-color: var(--sci); color: #04110f; }
+body.exp .chips button[aria-pressed=true] { background: var(--sci); border-color: var(--sci); color: #14213D; }
 body.exp #legend .bar { border-radius: 0; height: 6px; }
 body.exp #tally { color: var(--dim); }
 body.exp footer.note { display: none; }
@@ -51,10 +51,10 @@ body.exp footer.note { display: none; }
 /* signal board: one row per variable */
 body.exp .sig-row { display: grid; grid-template-columns: 1fr 44px; gap: 2px 8px; width: 100%; padding: 6px 8px; margin: 0 0 3px;
   color: var(--text); background: transparent; border: 1px solid transparent; border-left: 2px solid var(--line); font: 12px var(--sans); text-align: left; cursor: pointer; }
-body.exp .sig-row:hover { background: #0b1319; }
-body.exp .sig-row[aria-pressed=true] { border-color: var(--sci-dim); border-left-color: var(--sci); background: #0b1319; }
+body.exp .sig-row:hover { background: rgba(244,237,224,.07); }
+body.exp .sig-row[aria-pressed=true] { border-color: var(--sci-dim); border-left-color: var(--sci); background: rgba(244,237,224,.07); }
 body.exp .sig-row .pct { font: 500 12px var(--mono); text-align: right; }
-body.exp .sig-row .track { grid-column: 1 / -1; display: flex; height: 4px; background: #121c23; }
+body.exp .sig-row .track { grid-column: 1 / -1; display: flex; height: 4px; background: rgba(244,237,224,.10); }
 body.exp .sig-row .track span { display: block; height: 100%; }
 body.exp .sig-row small { grid-column: 1 / -1; font: 10px var(--mono); color: var(--dim); }
 body.exp #hist text { font: 9px var(--mono); fill: var(--dim); }
@@ -105,10 +105,17 @@ body.exp .sig-row { font-size: 14px; padding: 7px 9px; }
 body.exp .sig-row .pct { font-size: 13px; }
 body.exp .sig-row small { font-size: 11px; }
 body.exp .seg, body.exp .vrow, body.exp .readout { border-radius: 2px; }
-body.exp .seg button[aria-pressed=true] { background: var(--sci); color: #04110f; }
+body.exp .seg button[aria-pressed=true] { background: var(--sci); color: #14213D; }
 body.exp .seg button { font-family: var(--mono); font-size: 12px; }
 body.exp .readout { display: none; }
 body.exp details.layers summary { font: 500 11px var(--mono); letter-spacing: .14em; color: var(--sci); }
 body.exp .movers h4 { font-size: 11px; }
 body.exp .mover { font-size: 13px; }
 body.exp #varInfo { display: none; }
+
+/* theme: experimental keeps square instrument chrome, in the navy/cream/coral palette */
+body.exp .panel, body.exp #modeTabs, body.exp #uiToggle { border-radius: 6px; }
+body.exp #topbar, body.exp #botbar { -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4); border-color: rgba(244,237,224,.16); }
+body.exp .vrow, body.exp .seg, body.exp .pstat div, body.exp .verdict, body.exp .aibox, body.exp input[type=search], body.exp select, body.exp input[type=date] { border-radius: 4px; }
+body.exp .seg button[aria-pressed=true], body.exp #modeTabs button[aria-selected=true], body.exp .chips button[aria-pressed=true] { background: var(--coral); border-color: var(--coral); color: #fff; }
+body.exp #uiToggle[aria-pressed=true] .led { background: var(--coral); box-shadow: 0 0 8px var(--coral); }

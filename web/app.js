@@ -1,5 +1,5 @@
 /* EarthSignal: district trend detective. Plain JS + MapLibre GL, no build step. */
-const UP = [242, 142, 43], DOWN = [78, 159, 214], MID = [213, 217, 222];
+const UP = [255, 107, 91], DOWN = [127, 178, 255], MID = [244, 237, 224]; // coral rising, blue falling, cream neutral
 const TYPE_COLOR = {
   'Power plant': '#f2c14e', 'Steel & metals': '#e15759', 'Cement': '#b0a8a0', 'Oil & gas': '#b07aa1',
   'Mining': '#9c755f', 'Landfill & waste': '#59a14f', 'Other industry': '#76b7b2',
@@ -56,24 +56,32 @@ const isSig = (r) => r && r[2] !== null && r[2] < T.alpha;
   });
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
   map.on('style.load', () => { try { map.setProjection({ type: 'globe' }); } catch (e) { /* flat map fallback */ } });
+  map.on('style.load', () => { // tint the dark basemap navy to match the theme
+    for (const l of map.getStyle().layers) { try {
+      if (l.type === 'background') map.setPaintProperty(l.id, 'background-color', '#16233f');
+      else if (l.type === 'fill' && /water|ocean/.test(l.id)) map.setPaintProperty(l.id, 'fill-color', '#0d1730');
+      else if (l.type === 'fill' && /land|park|wood|residential/.test(l.id)) map.setPaintProperty(l.id, 'fill-color', '#1a2947');
+      else if (l.type === 'symbol') { map.setPaintProperty(l.id, 'text-color', 'rgba(244,237,224,.6)'); map.setPaintProperty(l.id, 'text-halo-color', 'rgba(15,26,51,.8)'); }
+    } catch (e) { /* layer without that property */ } }
+  });
   map.on('load', () => {
     paintDistricts();
     map.addSource('districts', { type: 'geojson', data: districts, promoteId: 'id' });
     map.addSource('states', { type: 'geojson', data: states });
     map.addLayer({ id: 'd-fill', type: 'fill', source: 'districts', paint: { 'fill-color': ['get', 'c'], 'fill-opacity': ['get', 'o'] } });
-    map.addLayer({ id: 'd-line', type: 'line', source: 'districts', minzoom: 4.5, paint: { 'line-color': '#0b0f14', 'line-width': 0.4, 'line-opacity': 0.6 } });
-    map.addLayer({ id: 's-line', type: 'line', source: 'states', paint: { 'line-color': '#e6ebf1', 'line-width': 0.7, 'line-opacity': 0.55 } });
-    map.addLayer({ id: 'd-sel', type: 'line', source: 'districts', filter: ['==', ['get', 'id'], ''], paint: { 'line-color': '#f2c14e', 'line-width': 2.5 } });
+    map.addLayer({ id: 'd-line', type: 'line', source: 'districts', minzoom: 4.5, paint: { 'line-color': '#14213D', 'line-width': 0.4, 'line-opacity': 0.6 } });
+    map.addLayer({ id: 's-line', type: 'line', source: 'states', paint: { 'line-color': '#F4EDE0', 'line-width': 0.7, 'line-opacity': 0.55 } });
+    map.addLayer({ id: 'd-sel', type: 'line', source: 'districts', filter: ['==', ['get', 'id'], ''], paint: { 'line-color': '#FFFFFF', 'line-width': 2.5 } });
 
     map.addSource('suspects', { type: 'geojson', data: suspects, cluster: true, clusterRadius: 38, clusterMaxZoom: 6 });
     map.addLayer({ id: 'sus-cluster', type: 'circle', source: 'suspects', filter: ['has', 'point_count'],
-      paint: { 'circle-color': '#0b0f14', 'circle-stroke-color': '#e6ebf1', 'circle-stroke-width': 1.2, 'circle-opacity': 0.85,
+      paint: { 'circle-color': '#14213D', 'circle-stroke-color': '#F4EDE0', 'circle-stroke-width': 1.2, 'circle-opacity': 0.85,
         'circle-radius': ['step', ['get', 'point_count'], 9, 25, 12, 100, 16, 400, 20] } });
     map.addLayer({ id: 'sus-count', type: 'symbol', source: 'suspects', filter: ['has', 'point_count'],
-      layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-size': 10, 'text-font': ['Noto Sans Regular'] }, paint: { 'text-color': '#e6ebf1' } });
+      layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-size': 10, 'text-font': ['Noto Sans Regular'] }, paint: { 'text-color': '#F4EDE0' } });
     map.addLayer({ id: 'sus-pt', type: 'circle', source: 'suspects', filter: ['!', ['has', 'point_count']],
       paint: { 'circle-color': ['match', ['get', 'type'], ...Object.entries(TYPE_COLOR).flat(), '#ccc'],
-        'circle-stroke-color': '#0b0f14', 'circle-stroke-width': 1,
+        'circle-stroke-color': '#14213D', 'circle-stroke-width': 1,
         'circle-radius': ['interpolate', ['linear'], ['sqrt', ['coalesce', ['get', 'co2e_t'], 0]], 0, 3, 1000, 5, 3000, 9, 6000, 15] } });
 
     map.on('click', 'sus-pt', (e) => { e.preventDefault(); sourcePopup(e.features[0]); });
@@ -96,7 +104,7 @@ function paintDistricts() {
   let nSig = 0, nAlibi = 0, n = 0;
   for (const f of districts.features) {
     const r = rec(f.properties.id, S.v, p);
-    if (!r || r[0] === null) { f.properties.c = '#333'; f.properties.o = 0.05; f.properties.h = 0; continue; }
+    if (!r || r[0] === null) { f.properties.c = '#3b4868'; f.properties.o = 0.05; f.properties.h = 0; continue; }
     n++;
     const s = isSig(r);
     if (s) nSig++; else if (r[1] !== null && r[1] < T.alpha) nAlibi++;
@@ -344,10 +352,10 @@ function chart(ser, id) {
   }
   const yr = (i) => Yd.y0 + i;
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Yearly values with trend line">
-    <line x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}" stroke="#232c38"/>
+    <line x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}" stroke="rgba(244,237,224,.2)"/>
     <text x="${L - 4}" y="${Y(hi) + 3}" text-anchor="end">${sig(hi, 3)}</text><text x="${L - 4}" y="${Y(lo) + 3}" text-anchor="end">${sig(lo, 3)}</text>
     ${[0, Math.floor((n - 1) / 2), n - 1].map((i) => `<text x="${X(i)}" y="${H - 6}" text-anchor="middle">${yr(i)}</text>`).join('')}
-    <polyline points="${pts}" fill="none" stroke="#e6ebf1" stroke-width="1.3"/>${line}</svg>
+    <polyline points="${pts}" fill="none" stroke="#F4EDE0" stroke-width="1.3"/>${line}</svg>
     <p class="note">${r ? `Sen's slope ${change(S.v, r)}, ${ci(r)} (shaded). p ${pq(r[1])}, q ${pq(r[2])}. ${isSig(r) ? 'Significant.' : 'Dashed line: not significant.'}` : ''}
     ${esc(T.vars[S.v].source)}, ${esc(T.vars[S.v].res)}${T.vars[S.v].unit ? ', ' + esc(T.vars[S.v].unit) : ''}.</p>`;
 }
@@ -400,7 +408,7 @@ async function liveFires(on) {
     if (!d) return;
     map.addSource('fires', { type: 'geojson', data: d });
     map.addLayer({ id: 'fires', type: 'circle', source: 'fires', paint: {
-      'circle-color': '#ff5a36', 'circle-opacity': 0.85, 'circle-blur': 0.3,
+      'circle-color': '#FFD166', 'circle-opacity': 0.85, 'circle-blur': 0.3,
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 1.2, 7, 3, 10, 5] } }, 'sus-cluster');
     map.on('click', 'fires', (e) => { e.preventDefault(); const p = e.features[0].properties;
       new maplibregl.Popup().setLngLat(e.features[0].geometry.coordinates).setHTML(`<b>Active fire</b><br><span class="stat">${esc(p.date)} ${esc(p.time)} UTC · ${esc(p.sat)}<br>Fire radiative power ${p.frp} MW · confidence ${esc(p.conf)}<br>NASA FIRMS (VIIRS 375 m)</span>`).addTo(map); });

@@ -14,7 +14,7 @@
     render();
   };
   document.querySelectorAll('#pVersion button').forEach((b) => { b.setAttribute('aria-pressed', b.dataset.ver === ver); b.onclick = () => setVer(b.dataset.ver); });
-  const VIOLET = '#f2c14e';
+  const VIOLET = '#FFFFFF';
 
   const km = (a, b) => { const r = Math.PI / 180, x = (b[0] - a[0]) * r * Math.cos(((a[1] + b[1]) / 2) * r), y = (b[1] - a[1]) * r; return 6371 * Math.hypot(x, y); };
   const centre = (f) => [f.properties.lon, f.properties.lat];
@@ -176,7 +176,7 @@
     const inArea = new Set(c.all);
     for (const f of districts.features) {
       const id = f.properties.id, s = best[id] || 0;
-      f.properties.pc = s ? `rgb(${mix([213, 217, 222], [242, 142, 43], Math.min(1, s / 100)).join(',')})` : '#3a4653';
+      f.properties.pc = s ? `rgb(${mix([244, 237, 224], [255, 107, 91], Math.min(1, s / 100)).join(',')})` : '#3b4868';
       f.properties.o = inArea.has(id) ? (s ? 0.25 + 0.6 * (s / 100) : 0.18) : 0.04;
       f.properties.h = 0;
     }

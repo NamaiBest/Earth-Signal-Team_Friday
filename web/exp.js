@@ -60,7 +60,7 @@
     for (let lon = -180; lon < 180; lon += 10) lines.push(Array.from({ length: 35 }, (_, i) => [lon, -85 + i * 5]));
     for (let lat = -80; lat <= 80; lat += 10) lines.push(Array.from({ length: 73 }, (_, i) => [-180 + i * 5, lat]));
     map.addSource('grat', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'MultiLineString', coordinates: lines } } });
-    map.addLayer({ id: 'grat', type: 'line', source: 'grat', paint: { 'line-color': '#7fe3d4', 'line-opacity': 0.16, 'line-width': 0.6 } }, 'd-fill');
+    map.addLayer({ id: 'grat', type: 'line', source: 'grat', paint: { 'line-color': '#F4EDE0', 'line-opacity': 0.16, 'line-width': 0.6 } }, 'd-fill');
     map.addLayer({ id: 'd-ext', type: 'fill-extrusion', source: 'districts', filter: ['>', ['get', 'h'], 0],
       minzoom: TILT_FROM - 0.4,
       paint: { 'fill-extrusion-color': ['get', 'c'], 'fill-extrusion-opacity': 0.88, 'fill-extrusion-base': 0,

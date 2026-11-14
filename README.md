@@ -35,6 +35,12 @@ cd web && python3 -m http.server 8000   # then open http://localhost:8000
 
 **Hosting:** Vercel, importing this repo (`vercel.json` serves `web/`). Works while the repo is private.
 
+## Policy workspace (Policy tab)
+
+- **v1 · Rules** (default): pick a state or district (+ optional airshed radius). Ranked list of significant trends in the harmful direction, "now vs normal" alerts (live fires, recent SO₂/NO₂), the largest Climate TRACE sources tagged when they sit in India's top-5 % SO₂ cells or where NO₂ is rising, and a downloadable Markdown brief. Built by `scripts/build_policy.py` → `web/data/policy.json`.
+- **v2 · AI-assisted** (switch at the top of the panel; remembered per browser; `?policy=v2`): Claude drafts a brief and answers questions **only from the facts on the page**, citing fact IDs (I# issues, A# alerts, S# sources). Every number in the answer is checked against the data and mismatches are flagged.
+  - Runs in the Vercel function `api/brief.js`. **Set `ANTHROPIC_API_KEY`** in Vercel → Project → Settings → Environment Variables (optional: `CLAUDE_MODEL`, `ACCESS_CODE`), then redeploy. Without the key, v2 says so and v1 still works.
+
 ## Rebuild the data
 
 ```bash
@@ -42,7 +48,8 @@ pip install geopandas pymannkendall statsmodels
 python3 scripts/build_boundaries.py   # districts + states (geoBoundaries; download URLs in the script)
 python3 scripts/build_suspects.py     # Climate TRACE sources -> web/data/suspects.geojson
 python3 scripts/fetch_power.py        # NASA POWER grids over India (no login, ~15 s)
-python3 scripts/district_trends.py    # Mann-Kendall + Sen + FDR -> web/data/trends.json (~1 min)
+python3 scripts/district_trends.py    # Mann-Kendall + Sen (95% CI) + FDR -> web/data/trends.json (~2 min)
+python3 scripts/build_policy.py       # issues, alerts, source tags -> web/data/policy.json
 ```
 
 Earlier checks: `scripts/fetch_open_data.sh`, `scripts/catalog.py`, `scripts/quick_check.py` (Arctic September sea ice −0.74 M km²/decade, significant, matches NSIDC; Antarctic February not significant, p = 0.13).

@@ -53,3 +53,27 @@ body.policy-mode.exp #board, body.policy-mode #legend { display: none; }
   #modeTabs { top: 10px; left: 10px; transform: none; }
   body.exp #modeTabs { top: 44px; left: 10px; right: auto; }
 }
+
+/* version switch + AI block (v2) */
+#pVersion { margin-top: 12px; }
+#pVersion button { font-size: 13px; }
+.aibox { margin-top: 14px; padding: 12px; border: 1px solid #3b4a5c; border-radius: 8px; background: linear-gradient(180deg, #121a24, #0f151d); }
+.aibox h3 { margin-top: 0; }
+.aitext { font-size: 13px; line-height: 1.5; }
+.aitext h4 { margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+.aitext ul { margin: 4px 0; padding-left: 18px; }
+.aitext li { margin: 3px 0; }
+.aitext p { margin: 6px 0; }
+.aitext.answer { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+.cite { padding: 0 4px; margin: 0 1px; font: 600 10px var(--mono); color: #0b0f14; background: var(--accent); border: 0; border-radius: 3px; cursor: pointer; vertical-align: 1px; }
+.fid { font: 600 10px var(--mono); color: #0b0f14; background: var(--accent); border-radius: 3px; padding: 0 4px; }
+.numcheck { margin: 8px 0 0; font-size: 12px; }
+.numcheck.ok { color: #7fd38b; }
+.numcheck.bad { color: #ff9a6b; }
+.ask { display: flex; gap: 6px; margin-top: 10px; }
+.ask input { flex: 1; padding: 7px 9px; color: var(--text); background: #0b1118; border: 1px solid var(--line); border-radius: 6px; font: inherit; font-size: 13px; }
+.ask button, .aibox .pbtns button { cursor: pointer; }
+.ask button { padding: 7px 12px; color: #0b0f14; background: var(--text); border: 0; border-radius: 6px; font: 500 13px var(--sans); }
+.aibox .pbtns button[disabled] { opacity: .5; cursor: wait; }
+body.exp .aibox, body.exp .ask input, body.exp .ask button { border-radius: 2px; }
+body.exp .ask button { background: var(--sci); }

@@ -2,5 +2,10 @@
   "outputDirectory": "web",
   "framework": null,
   "buildCommand": null,
-  "installCommand": null
+  "installCommand": null,
+  "functions": {
+    "api/brief.js": {
+      "maxDuration": 60
+    }
+  }
 }

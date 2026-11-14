@@ -1,72 +1,132 @@
-# Team Friday · EarthSignal
+# EarthSignal
 
-**NASA Space Apps Challenge 2026 · _Be an Earth System Trend Detective!_ (Advanced · Earth Science, Software)**
+**Is it really changing in your district? NASA data, tested for significance, turned into action.**
 
-> Pick an Indian district, and EarthSignal tells you what is really changing there, in which season, which nearby sources are the likely suspects, and where today's pollution is heading.
+Team Friday · NASA Space Apps Challenge 2026 · *Be an Earth System Trend Detective!*
 
-**New here? Read [`TEAM_BRIEF.md`](TEAM_BRIEF.md) (5 minutes).**
+**Live app: https://earthsignal.vercel.app**
 
-## Docs
+EarthSignal is a map of India's 735 districts that gives a verdict, not just a picture. It tests up to 25 years of NASA satellite and model records for real trends, throws out the false leads, and then shows officials which confirmed problems to act on first.
 
-| File | What's in it |
+## What it does
+
+### Detect
+
+Pick a variable and a season. Each district is coloured by its trend: coral for rising, blue for falling, solid if the change is confirmed, faded if it is not.
+
+Click or search a district to open its **case file**:
+
+- **Verdict**: change confirmed, false lead dismissed, or not proven.
+- **Evidence**: change per decade with a 95% range, a chart (yearly, monthly, or with seasons removed), a second-opinion t-test, a month-by-month calendar, and a CSV download.
+- **Clues**: every variable that changed significantly in this district.
+- **Alibis**: apparent changes that failed the test.
+- **Suspects**: nearby emission sources. Shown as association, never as proof.
+
+### Policy
+
+Pick a state or district and, optionally, the airshed around it.
+
+- **Confirmed problems** ranked by severity, each with its change per decade, season and 95% range.
+- **Alerts**: where fires, NO₂ or SO₂ are far above normal right now.
+- **Watchlist**: the largest emission sources in the area.
+- **AI brief and questions**: ask anything in plain language. The AI is given only the facts on the page, must cite them, and the page checks every number it writes against the data.
+
+### Learn
+
+Guided cases and an Investigate flow for people new to trend data.
+
+## The numbers
+
+| | |
 |---|---|
-| [`TEAM_BRIEF.md`](TEAM_BRIEF.md) | Quick read: idea, decisions so far, demo, to-dos |
-| [`docs/PLAN.md`](docs/PLAN.md) | Full plan: problem, challenge fit, four layers, limits, data, methods, 48-h schedule, submission checklist |
-| [`docs/CHALLENGE_EVALUATION.md`](docs/CHALLENGE_EVALUATION.md) | Challenge text, competing teams, how we differ, rules |
-| [`docs/PARAMETERS.md`](docs/PARAMETERS.md) | Which variables, screened from the 55 GCOS Essential Climate Variables |
-| [`docs/DATASETS.md`](docs/DATASETS.md) | 34 NASA datasets verified in NASA's catalog, live GIBS layers, India additions |
-| [`docs/STACK.md`](docs/STACK.md) | Libraries chosen from GitHub and why |
-| [`docs/UI.md`](docs/UI.md) | UI brief (scroll-craft intro, visual rules) |
-| [`docs/archive/PLAN_v1.md`](docs/archive/PLAN_v1.md) | Original 27 Oct plan |
-| [`design/mockups/`](design/mockups/) | UI mockups (Trends, Live) |
+| Districts | 735 |
+| Variables | 11 |
+| Tests run | 134,399 |
+| Look significant on their own (p < 0.05) | 52,344 |
+| Survive false-discovery-rate correction | 39,603 |
+| False leads dismissed | 12,741 |
 
-## The app (`web/`)
+## Method
 
-Static site, no build step. MapLibre globe of India's 735 districts:
+- **Direction**: seasonal Mann-Kendall test for whole-year trends; Hamed-Rao corrected Mann-Kendall for seasons and months. Fires are tested on yearly totals.
+- **Size**: Sen's slope per decade with a 95% confidence interval.
+- **Many tests**: Benjamini-Hochberg false-discovery-rate correction across districts for each variable and period. A trend counts only if q < 0.05.
+- **Data rules**: at least 70% of months must be present. Gaps are never filled.
+- **Validation**: 28 series re-derived through NASA Giovanni. 26 reach the same verdict. The two that disagree are model rainfall against independent satellite rainfall. See [`docs/VALIDATION.md`](docs/VALIDATION.md).
 
-- **Detect**: 6 NASA variables, 2001 to 2025, trend per decade for the whole year and each IMD season. Colour = direction, opacity = significance.
-- **Case file** (click or search a district): Clues, Pattern (fastest-changing season + month calendar), Alibis, Suspects, Associations, evidence chart.
-- **Suspects**: 4,388 industrial sources from Climate TRACE (power, steel, cement, oil & gas, mining, landfills, other industry).
-- **Live from NASA**: GIBS imagery (true colour, NO₂, aerosol, SO₂, land temperature) for any date.
+## Data
+
+| Variable | Source | Record |
+|---|---|---|
+| Nitrogen dioxide (NO₂) | NASA Aura OMI, OMNO2d v003 | 2005–2025 |
+| Sulphur dioxide (SO₂) | NASA Aura OMI, OMSO2e v003 | 2005–2025 |
+| Haze (aerosol optical depth) | NASA CERES via NASA POWER | 2001–2025 |
+| Surface sunlight | NASA CERES via NASA POWER | 2001–2025 |
+| Fires | NASA FIRMS, MODIS Terra + Aqua | 2003–2025 |
+| Greenness (NDVI) | NASA Terra MODIS, MOD13C2 | 2001–2025 |
+| Land surface temperature | NASA Terra MODIS, MOD11C3 | 2001–2022 |
+| Air temperature, peak heat, rainfall, soil moisture | NASA MERRA-2 via NASA POWER | 2001–2025 |
+
+Also used: NASA GIBS imagery, NASA FIRMS VIIRS live fires, NASA Giovanni (validation, including GPM IMERG rainfall), Climate TRACE emission sources (CC BY 4.0), geoBoundaries (ODbL), OpenFreeMap / OpenStreetMap basemap.
+
+## Limits
+
+- The four MERRA-2 variables are model output and are **not validated**. The app labels them and keeps them out of Policy.
+- Satellite cells are 25 to 100 km wide. Neighbouring districts can share a cell.
+- A trend is not a cause. A source near a trend is an association.
+- Climate TRACE emissions are estimates, not measurements.
+- MODIS land temperature stops at 2022 because Terra's orbit drifted afterwards.
+- Falling fire counts in Punjab may partly reflect burning that moved to later in the day, after the satellite passes.
+
+## Run it locally
+
+The app is a static site with no build step.
 
 ```bash
 cd web && python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
-**Hosting:** Vercel, importing this repo (`vercel.json` serves `web/`). Works while the repo is private.
+The AI brief needs the serverless function in `api/brief.js` and a `GEMINI_API_KEY` environment variable, so it works on Vercel but not on the plain local server. Everything else works locally.
 
-## Policy workspace (Policy tab)
-
-- **v1 · Rules** (default): pick a state or district (+ optional airshed radius). Ranked list of significant trends in the harmful direction, "now vs normal" alerts (live fires, recent SO₂/NO₂), the largest Climate TRACE sources tagged when they sit in India's top-5 % SO₂ cells or where NO₂ is rising, and a downloadable Markdown brief. Built by `scripts/build_policy.py` → `web/data/policy.json`.
-- **v2 · AI-assisted** (switch at the top of the panel; remembered per browser; `?policy=v2`): An AI model (Gemini by default) drafts a brief and answers questions **only from the facts on the page**, citing fact IDs (I# issues, A# alerts, S# sources). Every number in the answer is checked against the data and mismatches are flagged.
-  - Runs in the Vercel function `api/brief.js`. **Set `GEMINI_API_KEY`** (Google AI Studio) in Vercel → Project → Settings → Environment Variables (optional: `GEMINI_MODEL`, default `gemini-3.8-flash`; `ANTHROPIC_API_KEY` also works as a fallback; `ACCESS_CODE` to stop strangers spending your credits: share the site as `…/?tab=policy&policy=v2&code=YOURCODE` and the browser remembers it), then redeploy. Without the key, v2 says so and v1 still works.
+Useful links: `?tab=policy` opens the Policy workspace, `?ui=exp` opens the experimental interface, `?clean=1` hides the Learn and Experimental buttons for recording.
 
 ## Rebuild the data
 
+Python 3.11+, with `numpy`, `pandas`, `xarray`, `geopandas`, `pymannkendall`, `statsmodels`. The OMI and MODIS downloads need a NASA Earthdata login; FIRMS needs a free map key. Keep both in a local `.secrets/` folder, which is git-ignored.
+
 ```bash
-pip install geopandas pymannkendall statsmodels
-python3 scripts/build_boundaries.py   # districts + states (geoBoundaries; download URLs in the script)
-python3 scripts/build_suspects.py     # Climate TRACE sources -> web/data/suspects.geojson
-python3 scripts/fetch_power.py        # NASA POWER grids over India (no login, ~15 s)
-python3 scripts/district_trends.py    # Mann-Kendall + Sen (95% CI) + FDR -> web/data/trends.json (~2 min)
-python3 scripts/build_policy.py       # issues, alerts, source tags -> web/data/policy.json
+python scripts/build_boundaries.py      # districts and states
+python scripts/build_suspects.py        # Climate TRACE sources
+python scripts/fetch_power.py           # CERES and MERRA-2 variables
+python scripts/fetch_omi_no2.py
+python scripts/fetch_omi_so2.py
+python scripts/fetch_modis_cmg.py LST
+python scripts/fetch_modis_cmg.py NDVI
+python scripts/fetch_firms.py
+python scripts/district_trends.py       # the tests: writes web/data/trends.json
+python scripts/build_policy.py          # writes web/data/policy.json
+python scripts/validate_giovanni.py     # writes web/data/validation.json
 ```
 
-Earlier checks: `scripts/fetch_open_data.sh`, `scripts/catalog.py`, `scripts/quick_check.py` (Arctic September sea ice −0.74 M km²/decade, significant, matches NSIDC; Antarctic February not significant, p = 0.13).
+## Repository layout
 
-## Known limits (say these in the pitch)
+| Path | Contents |
+|---|---|
+| `web/` | The app: plain JavaScript and MapLibre GL |
+| `web/data/` | Precomputed trends, series, boundaries and sources |
+| `api/brief.js` | Serverless function for the AI brief |
+| `scripts/` | Data pipeline and statistics |
+| `docs/` | Plan, datasets, parameters, validation |
 
-- Variables so far come from NASA POWER, which needs no login: haze and sunlight are satellite-based (CERES SYN1deg, ~100 km); temperature, rainfall and soil moisture are MERRA-2 model reanalysis (~50 km). **NO₂, land temperature and fires at district resolution still need a NASA Earthdata login.**
-- MERRA-2 shows cooling over north-west India (for example Ludhiana −0.7 °C/decade). That is probably a reanalysis artefact, not real cooling. **Validate against IMD / GISTEMP before showing temperature to judges.**
-- Small neighbouring districts share a grid cell, so their results are not independent.
-- Suspects are Climate TRACE estimates and are shown as "nearby", never "responsible".
+## Development timeline
 
-## Status
+- **13 Nov 2026 (before the event):** planning documents, boundary and source data, the first district trend pipeline, the first map, and the first satellite download scripts. This work is the first commit in this repository; its full history is in the earlier repository `NamaiBest/SpaceApps-Team-Friday`.
+- **14–15 Nov 2026 (during the event):** confidence intervals, SO₂, the Policy workspace and AI brief, NASA Giovanni validation, the theme, the Learn view, evidence charts, the verdict stamp, and the 3D and readout controls.
 
-🟡 Hackathon **Sat 14 – Sun 15 Nov 2026**, deadline **Sun 15 Nov 23:59 local**.
-Repo is **private** for now; it must be made **public** (MIT) before submission.
-Confirm with the Local Lead that code written before the event may be used.
+## Use of AI
+
+AI tools were used to build this project. Claude (Anthropic) assisted with writing code, the data pipeline and documentation. Google Gemini writes the optional policy brief inside the app, from the page's facts only. The team chose the methods and checked the results against NASA Giovanni. No AI-generated images, video or audio are used.
 
 ## Licence
 
-MIT for our code. NASA, NOAA and NSIDC data remain under their own terms; Climate TRACE is CC BY 4.0; geoBoundaries (India) is ODbL 1.0. Credit all of them on the project page.
+MIT. See [`LICENSE`](LICENSE). Data sources keep their own licences, listed above.

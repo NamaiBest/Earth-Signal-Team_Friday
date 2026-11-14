@@ -27,6 +27,7 @@ const sig = (x, n = 2) => (x === null || x === undefined ? 'n/a' : Number(x.toPr
 const signed = (x, n = 2) => (x > 0 ? '+' : x < 0 ? '−' : '') + sig(Math.abs(x), n);
 const pq = (x) => (x === null ? 'n/a' : x < 0.001 ? '<0.001' : x.toFixed(3));
 const tonnes = (t) => (t == null ? 'n/a' : t >= 1e6 ? (t / 1e6).toFixed(1) + ' Mt' : t >= 1e3 ? Math.round(t / 1e3) + ' kt' : Math.round(t) + ' t');
+const ci = (r) => (r && r[4] != null && r[5] != null ? `95% CI ${signed(r[4])} to ${signed(r[5])}` : ''); // Sen's slope interval
 function change(vkey, r) { // "+0.045 per decade (+7% of its average)"
   const m = T.vars[vkey], unit = m.unit ? ' ' + m.unit : '';
   let s = `${signed(r[0])}${unit} per decade`;
@@ -104,14 +105,14 @@ function paintDistricts() {
     f.properties.h = s ? Math.min(1, Math.abs(r[0]) / scale) : 0; // experimental UI: column height
   }
   if (map && map.getSource('districts')) map.getSource('districts').setData(districts);
-  const m = T.vars[S.v];
-  $('#legend').innerHTML = `<div class="bar"></div>
-    <div class="ticks"><span>−${sig(scale)}</span><span>0</span><span>+${sig(scale)} ${esc(m.unit)}/decade</span></div>
-    <div class="key"><span class="sw"></span>significant <span class="sw faint"></span>not significant (faded)</div>
-    <div class="key">${esc(m.label)}, ${m.years.join('–')}. ${esc(m.source)}, ${esc(m.res)} grid.${m.note ? ' ' + esc(m.note) : ''}</div>`;
+  const m = T.vars[S.v], unit = m.unit ? ' ' + esc(m.unit) : '';
+  $('#legend').innerHTML = `<div class="lgnd"><span>Falling</span><div class="bar"></div><span>Rising</span></div>
+    <div class="ticks"><span>−${sig(scale)}</span><span>0</span><span>+${sig(scale)}</span></div>
+    <p class="key"><span class="sw"></span>Solid: significant <span class="sw faint"></span>Faded: not significant</p>`;
+  $('#varInfo').innerHTML = `<b>${esc(m.label)}</b>, ${m.years.join('–')}. Change per decade${unit}. ${esc(m.source)}, ${esc(m.res)} grid.${m.note ? '<br><span class="warn">Note:</span> ' + esc(m.note) : ''}`;
+  $('#tally').innerHTML = `<b class="big">${nSig}</b> of ${n} districts changed significantly` +
+    `<span class="sub2">${esc(m.short)} · ${esc(String(T.period_labels[S.p]))}${nAlibi ? ` · ${nAlibi} more failed the correction for chance` : ''}</span>`;
   pixels();
-  $('#tally').innerHTML = `${nSig} of ${n} districts changed significantly.` +
-    (nAlibi ? `<br>${nAlibi} more looked significant alone but fail the correction for chance.` : '');
   if (window.expRefresh) window.expRefresh({ nSig, nAlibi, n });
 }
 
@@ -119,8 +120,31 @@ function paintDistricts() {
 function buildControls() {
   const chip = (host, label, on, fn) => { const b = el('button', { type: 'button' }, label); b.setAttribute('aria-pressed', on); b.onclick = () => fn(b); host.append(b); return b; };
   const one = (host) => (b) => { host.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); };
-  for (const [k, m] of Object.entries(T.vars)) chip($('#vars'), esc(m.short), k === S.v, (b) => { S.v = k; one($('#vars'))(b); paintDistricts(); if (S.sel) caseFile(S.sel); });
-  for (const k of SEASONS) chip($('#periods'), esc(String(T.period_labels[k]).replace(/ \(.*/, '')), k === S.p, (b) => { S.p = k; one($('#periods'))(b); paintDistricts(); if (S.sel) caseFile(S.sel); });
+  // 1. variables, grouped so the trustworthy satellite signals come first
+  const GROUPS = [['Air quality', ['NO2', 'SO2', 'AOD_55', 'ALLSKY_SFC_SW_DWN']], ['Land and fire', ['FIRE', 'NDVI', 'LST']],
+    ['Climate model · not yet validated', ['T2M', 'T2M_MAX', 'PRECTOTCORR', 'GWETROOT']]];
+  const pickVar = (k) => { S.v = k; document.querySelectorAll('#vars .vrow').forEach((x) => x.setAttribute('aria-pressed', x.dataset.v === k)); paintDistricts(); if (S.sel) caseFile(S.sel); };
+  for (const [g, keys] of GROUPS) {
+    const ks = keys.filter((k) => T.vars[k]);
+    if (!ks.length) continue;
+    const box = el('div', { className: 'vgroup' }, `<p class="vgl">${esc(g)}</p>`);
+    const grid = el('div', { className: 'vgrid' });
+    for (const k of ks) {
+      const m = T.vars[k], b = el('button', { type: 'button', className: 'vrow' + (m.kind === 'model' ? ' model' : '') },
+        `<span class="vn">${esc(m.short)}</span><span class="vm">${m.years[0]}–${String(m.years[1]).slice(2)} · ${esc(m.res.replace('~', ''))}</span>`);
+      b.dataset.v = k; b.title = `${m.label}. ${m.source}.`; b.setAttribute('aria-pressed', k === S.v);
+      b.onclick = () => pickVar(k);
+      grid.append(b);
+    }
+    box.append(grid); $('#vars').append(box);
+  }
+  window.pickVar = pickVar;
+  // 2. seasons
+  const MONTHS = { year: 'Jan–Dec', winter: 'Jan–Feb', premonsoon: 'Mar–May', monsoon: 'Jun–Sep', postmonsoon: 'Oct–Dec' };
+  const SHORT = { year: 'Year', winter: 'Winter', premonsoon: 'Pre-mons.', monsoon: 'Monsoon', postmonsoon: 'Post-mons.' };
+  const pickSeason = (k) => { S.p = k; document.querySelectorAll('#periods button').forEach((x) => x.setAttribute('aria-pressed', x.dataset.p === k)); paintDistricts(); if (S.sel) caseFile(S.sel); };
+  for (const k of SEASONS) { const b = chip($('#periods'), `${SHORT[k]}<small>${MONTHS[k]}</small>`, k === S.p, () => pickSeason(k)); b.dataset.p = k; b.title = String(T.period_labels[k]); }
+  window.pickSeason = pickSeason;
   for (const [t, c] of Object.entries(TYPE_COLOR)) chip($('#types'), `<span class="dot" style="background:${c}"></span>${esc(t)}`, true, (b) => {
     S.types.has(t) ? S.types.delete(t) : S.types.add(t); b.setAttribute('aria-pressed', S.types.has(t)); filterSuspects();
   });
@@ -229,7 +253,7 @@ async function caseFile(id) {
     ${alibis.length ? `<b>${alibis.length}</b> apparent change${alibis.length > 1 ? 's' : ''} did not survive the test.` : ''}</div>`;
 
   h += '<h3>Clues</h3>' + (clues.length ? clues.map((c) => `<div class="item"><b>${esc(T.vars[c.v].short)}</b> is ${dir(c.main.r[0])}: ${change(c.v, c.main.r)}
-      <span class="stat">${T.vars[c.v].years.join('–')} · ${esc(lab(c.main.s))} · p ${pq(c.main.r[1])} · q ${pq(c.main.r[2])} · ${esc(T.vars[c.v].res)} ${T.vars[c.v].kind}</span></div>`).join('')
+      <span class="stat">${ci(c.main.r)} · ${T.vars[c.v].years.join('–')} · ${esc(lab(c.main.s))} · p ${pq(c.main.r[1])} · q ${pq(c.main.r[2])} · ${esc(T.vars[c.v].res)} ${T.vars[c.v].kind}</span></div>`).join('')
     : '<p class="empty">No variable passes the significance test here.</p>');
 
   const pat = clues.filter((c) => c.seas);
@@ -313,6 +337,10 @@ function chart(ser, id) {
   if (r && r[0] !== null) { // Sen's line: slope from the test, intercept = median residual
     const b = r[0] / 10, res = y.map((v, i) => (v === null ? null : v - b * i)).filter((v) => v !== null).sort((p, q) => p - q), a = res[Math.floor(res.length / 2)];
     line = `<line x1="${X(0)}" y1="${Y(a)}" x2="${X(n - 1)}" y2="${Y(a + b * (n - 1))}" stroke="${r[0] > 0 ? 'var(--up)' : 'var(--down)'}" stroke-width="2" ${isSig(r) ? '' : 'stroke-dasharray="4 4" opacity=".6"'}/>`;
+    if (r[4] != null && r[5] != null) { // 95% CI fan around the middle year
+      const mid = (n - 1) / 2, am = a + b * mid, lo = r[4] / 10, hi = r[5] / 10;
+      line = `<polygon points="${X(0)},${Y(am - hi * mid)} ${X(n - 1)},${Y(am + hi * mid)} ${X(n - 1)},${Y(am + lo * mid)} ${X(0)},${Y(am - lo * mid)}" fill="${r[0] > 0 ? 'var(--up)' : 'var(--down)'}" opacity=".16"/>` + line;
+    }
   }
   const yr = (i) => Yd.y0 + i;
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Yearly values with trend line">
@@ -320,7 +348,7 @@ function chart(ser, id) {
     <text x="${L - 4}" y="${Y(hi) + 3}" text-anchor="end">${sig(hi, 3)}</text><text x="${L - 4}" y="${Y(lo) + 3}" text-anchor="end">${sig(lo, 3)}</text>
     ${[0, Math.floor((n - 1) / 2), n - 1].map((i) => `<text x="${X(i)}" y="${H - 6}" text-anchor="middle">${yr(i)}</text>`).join('')}
     <polyline points="${pts}" fill="none" stroke="#e6ebf1" stroke-width="1.3"/>${line}</svg>
-    <p class="note">${r ? `Sen's slope ${change(S.v, r)}; p ${pq(r[1])}, q ${pq(r[2])}. ${isSig(r) ? 'Significant.' : 'Dashed line: not significant.'}` : ''}
+    <p class="note">${r ? `Sen's slope ${change(S.v, r)}, ${ci(r)} (shaded). p ${pq(r[1])}, q ${pq(r[2])}. ${isSig(r) ? 'Significant.' : 'Dashed line: not significant.'}` : ''}
     ${esc(T.vars[S.v].source)}, ${esc(T.vars[S.v].res)}${T.vars[S.v].unit ? ', ' + esc(T.vars[S.v].unit) : ''}.</p>`;
 }
 
@@ -361,7 +389,7 @@ async function pixels() {
   }
   map.setLayoutProperty('px', 'visibility', 'visible');
   const nSig = g.q.filter((x) => x !== null && x < T.alpha).length, n = g.q.filter((x) => x !== null).length;
-  $('#tally').innerHTML = `Pixel view (whole year): ${nSig} of ${n} grid cells changed significantly.` + (p !== 'year' ? '<br>Pixels show the whole-year trend only.' : '');
+  $('#tally').innerHTML = `<b class="big">${nSig}</b> of ${n} satellite cells changed significantly<span class="sub2">${esc(T.vars[v].short)} · whole year${p !== 'year' ? ' (pixel maps are whole-year only)' : ''}</span>`;
 }
 window.setView = (v) => { S.view = v; paintDistricts(); };
 

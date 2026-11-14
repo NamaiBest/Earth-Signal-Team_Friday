@@ -134,7 +134,7 @@
         <small>${up} rising · ${down} falling · ${m.res} ${m.kind}</small>`);
       row.setAttribute('aria-pressed', k === S.v);
       row.title = `${m.label}: share of districts with a significant trend`;
-      row.onclick = () => q('#vars').children[i].click();
+      row.onclick = () => window.pickVar(k);
       board.append(row);
     });
 

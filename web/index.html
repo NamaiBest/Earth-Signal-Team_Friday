@@ -9,14 +9,15 @@
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="exp.css">
+<link rel="stylesheet" href="policy.css">
 </head>
 <body>
 <div id="map"></div>
 
-<aside id="controls" class="panel">
+<aside id="controls" class="panel" aria-label="Detect controls">
   <header>
     <h1>EarthSignal</h1>
-    <p class="sub">What is really changing in your district, tested for significance.</p>
+    <p class="sub">Is it really changing in your district? NASA data, tested for significance.</p>
   </header>
 
   <div class="search">
@@ -24,37 +25,68 @@
     <ul id="results" hidden></ul>
   </div>
 
-  <section>
-    <h2>Detect <span class="hint">trend per decade, NASA record</span></h2>
-    <div id="vars" class="chips" role="group" aria-label="Variable"></div>
-    <div id="periods" class="chips small" role="group" aria-label="Season"></div>
-    <div id="viewSel" class="chips small" role="group" aria-label="Map unit"><button type="button" data-v="districts" aria-pressed="true">Districts</button><button type="button" data-v="pixels" aria-pressed="false">Pixels (~25–100 km)</button></div>
-    <div id="legend"></div>
-    <p id="tally" class="mono"></p>
+  <section class="step">
+    <h2><span class="n">1</span>What to measure</h2>
+    <div id="vars" role="group" aria-label="Variable"></div>
   </section>
 
-  <section>
-    <h2>Suspects <span class="hint">emission sources</span></h2>
+  <section class="step">
+    <h2><span class="n">2</span>Which season</h2>
+    <div id="periods" class="seg seg5" role="group" aria-label="Season"></div>
+  </section>
+
+  <section class="step">
+    <h2><span class="n">3</span>Show by</h2>
+    <div id="viewSel" class="seg" role="group" aria-label="Map unit"><button type="button" data-v="districts" aria-pressed="true">Districts<small>735 areas</small></button><button type="button" data-v="pixels" aria-pressed="false">Satellite pixels<small>25–100 km cells</small></button></div>
+  </section>
+
+  <section class="readout" aria-live="polite">
+    <p id="tally"></p>
+    <div id="legend"></div>
+  </section>
+  <p id="varInfo" class="note"></p>
+
+  <details class="layers" open>
+    <summary>Emission sources <span class="hint">Climate TRACE 2024</span></summary>
     <label class="row" id="susLabel"><input type="checkbox" id="suspectsOn" checked> Show sources on the map</label>
     <div id="types" class="chips small"></div>
     <label class="row"><input type="checkbox" id="firesOn"> Active fires, last 5 days (NASA FIRMS)</label>
     <p class="note" id="firesNote"></p>
-    <p class="note">Climate TRACE estimates for 2024. A source near a trend is an association, not proof.</p>
-  </section>
+    <p class="note">Estimates, not measurements. A source near a trend is an association, not proof.</p>
+  </details>
 
-  <section>
-    <h2>Live from NASA <span class="hint">satellite imagery</span></h2>
+  <details class="layers">
+    <summary>NASA imagery for a date <span class="hint">GIBS</span></summary>
     <div class="row">
       <select id="gibs" aria-label="NASA imagery layer"></select>
       <input id="gibsDate" type="date" aria-label="Imagery date">
     </div>
-    <p class="note">Tiles stream from NASA GIBS. This is what the satellite saw that day, not a trend.</p>
-  </section>
+    <p class="note">What the satellite saw that day, not a trend.</p>
+  </details>
 
   <footer class="note">
-    Data: NASA OMI, MODIS, FIRMS, POWER (MERRA-2, CERES), GIBS; Climate TRACE; geoBoundaries.
-    Method: Mann-Kendall, Sen's slope, false-discovery-rate correction.
+    NASA OMI, MODIS, FIRMS, POWER (MERRA-2, CERES), GIBS · Climate TRACE · geoBoundaries.
+    Mann-Kendall test, Sen's slope with 95% confidence interval, false-discovery-rate correction.
   </footer>
+</aside>
+
+<nav id="modeTabs" role="tablist" aria-label="Workspace">
+  <button type="button" role="tab" data-mode="detect" aria-selected="true">Detect</button>
+  <button type="button" role="tab" data-mode="policy" aria-selected="false">Policy</button>
+</nav>
+
+<aside id="policy" class="panel" hidden aria-label="Policy workspace">
+  <header>
+    <h1>Policy workspace</h1>
+    <p class="sub">Where problems are worsening in your jurisdiction, and which sources sit there.</p>
+  </header>
+  <div class="search">
+    <input id="pScope" type="search" placeholder="Choose a state or district" autocomplete="off" aria-label="Jurisdiction">
+    <ul id="pResults" hidden></ul>
+  </div>
+  <label class="row"><input type="checkbox" id="pAirshed" checked> Include the airshed (districts within <select id="pRadius" aria-label="Airshed radius"><option>100</option><option selected>150</option><option>250</option></select> km)</label>
+  <label class="row"><input type="checkbox" id="pModel"> Include unvalidated model variables</label>
+  <div id="pBody"></div>
 </aside>
 
 <aside id="casefile" class="panel" hidden>
@@ -67,5 +99,6 @@
 
 <script src="app.js"></script>
 <script src="exp.js"></script>
+<script src="policy.js"></script>
 </body>
 </html>

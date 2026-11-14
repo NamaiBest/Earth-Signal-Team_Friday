@@ -4,6 +4,7 @@ Also writes per-pixel trend maps.
 Inputs (each optional; a variable is skipped if its file is missing):
   data/raw/power/india_monthly.npz     NASA POWER: T2M, T2M_MAX, PRECTOTCORR, AOD_55, ALLSKY_SFC_SW_DWN, GWETROOT
   data/raw/no2/omi_no2_monthly.npz     NASA OMI tropospheric NO2 (scripts/fetch_omi_no2.py)
+  data/raw/so2/omi_so2_monthly.npz     NASA OMI boundary-layer SO2 (scripts/fetch_omi_so2.py)
   data/raw/modis/LST_monthly.npz       NASA MODIS land surface temperature (scripts/fetch_modis_cmg.py LST)
   data/raw/modis/NDVI_monthly.npz      NASA MODIS NDVI (scripts/fetch_modis_cmg.py NDVI)
   data/raw/firms/FIRE_monthly.npz      NASA FIRMS MODIS vegetation fires (scripts/fetch_firms.py)
@@ -17,7 +18,9 @@ Method (docs/PLAN.md section 9), per variable on its own record length:
   3. IMD seasons (Winter Jan-Feb, Pre-monsoon Mar-May, Monsoon Jun-Sep, Post-monsoon Oct-Dec)
      and each calendar month: one value per year, Mann-Kendall with the Hamed-Rao
      autocorrelation correction, Sen's slope on the real year index.
-  4. Benjamini-Hochberg false discovery rate across all districts (or all pixels),
+  4. 95 % confidence interval for every Sen's slope (Gilbert 1987), using the variance of the
+     matching test (Hamed-Rao corrected for seasons and months).
+  5. Benjamini-Hochberg false discovery rate across all districts (or all pixels),
      separately for each variable x period. Significant only if q < 0.05.
 Writes:
   web/data/trends.json             district results, compact
@@ -48,6 +51,9 @@ POWER = RAW / "power" / "india_monthly.npz"
 VARS = {
     "NO2": dict(file=RAW / "no2" / "omi_no2_monthly.npz", label="Tropospheric nitrogen dioxide (NO₂)", short="NO₂",
                 unit="×10¹⁵ molec/cm²", rel=True, source="NASA Aura OMI (OMNO2d v003, cloud-screened)", res="~25 km", kind="satellite"),
+    "SO2": dict(file=RAW / "so2" / "omi_so2_monthly.npz", label="Boundary-layer sulphur dioxide (SO₂)", short="SO₂",
+                unit="DU", rel=True, source="NASA Aura OMI (OMSO2e v003, PBL, quality-filtered)", res="~25 km", kind="satellite",
+                note="OMI SO₂ is noisy outside large sources; trust strong hotspots (coal power, smelters, refineries) more than small changes."),
     "AOD_55": dict(file=POWER, label="Aerosol optical depth (haze, 550 nm)", short="Haze (AOD)", unit="", rel=True,
                    source="NASA CERES SYN1deg (MODIS-constrained aerosol) via NASA POWER", res="~100 km", kind="satellite"),
     "FIRE": dict(file=RAW / "firms" / "FIRE_monthly.npz", label="Vegetation fires (count density)", short="Fires",
@@ -93,8 +99,21 @@ def mk_s_var(y):
     return s, var, d / (t[j] - t[i])
 
 
+def sen_ci(slopes, var_s, alpha=0.05):
+    """95 % confidence interval for Sen's slope (Gilbert 1987): ranks of the sorted pairwise
+    slopes at (N -/+ z * sqrt(Var S)) / 2, using the variance of the matching MK test."""
+    n = len(slopes)
+    if n < 3 or not np.isfinite(var_s) or var_s <= 0:
+        return np.nan, np.nan
+    c = norm.ppf(1 - alpha / 2) * math.sqrt(var_s)
+    srt = np.sort(slopes)
+    lo = int(np.floor((n - c) / 2))
+    hi = int(np.ceil((n + c) / 2))
+    return float(srt[max(lo, 0)]), float(srt[min(hi, n - 1)])
+
+
 def seasonal_mk(series, nyears):
-    """Seasonal Mann-Kendall + seasonal Sen's slope (per year) on a monthly series."""
+    """Seasonal Mann-Kendall + seasonal Sen's slope (per year) and its 95 % CI on a monthly series."""
     m = series.reshape(nyears, 12)
     S = V = 0.0
     slopes = []
@@ -104,41 +123,46 @@ def seasonal_mk(series, nyears):
         V += v
         slopes.append(sl)
     if V <= 0:
-        return np.nan, np.nan
+        return np.nan, np.nan, np.nan, np.nan
     z = (S - np.sign(S)) / math.sqrt(V)
-    return float(np.median(np.concatenate(slopes))), float(2 * norm.sf(abs(z)))
+    allsl = np.concatenate(slopes)
+    lo, hi = sen_ci(allsl, V)
+    return float(np.median(allsl)), float(2 * norm.sf(abs(z))), lo, hi
 
 
 def annual_test(y):
-    """Hamed-Rao corrected MK p-value; Sen's slope on the true year index."""
+    """Hamed-Rao corrected MK p-value; Sen's slope on the true year index; 95 % CI from the
+    autocorrelation-corrected variance (wider when years are correlated)."""
     ok = np.isfinite(y)
     if ok.sum() < 8:
-        return np.nan, np.nan
-    _, _, sl = mk_s_var(y)
+        return np.nan, np.nan, np.nan, np.nan
+    _, var0, sl = mk_s_var(y)
     try:
-        p = mk.hamed_rao_modification_test(y[ok]).p
+        t = mk.hamed_rao_modification_test(y[ok])
+        p, var_s = t.p, t.var_s
     except Exception:  # noqa: BLE001
-        p = np.nan
-    return float(np.median(sl)) if len(sl) else np.nan, float(p)
+        p, var_s = np.nan, var0
+    lo, hi = sen_ci(sl, var_s)
+    return (float(np.median(sl)) if len(sl) else np.nan), float(p), lo, hi
 
 
 def test_one(args):
-    """All periods for one series. Returns [[slope/decade, p, mean], ...] (17 periods).
+    """All periods for one series. Returns [[slope/decade, p, mean, lo/decade, hi/decade], ...] (17 periods).
     annual=True: whole-year test on yearly means (for zero-heavy counts such as fires)."""
     s, nyears, annual = args
     by_year = s.reshape(nyears, 12)
     if annual:
         y = np.where(np.isfinite(by_year).sum(1) >= 9, np.nanmean(by_year, axis=1), np.nan)
-        b, p = annual_test(y)
+        b, p, lo, hi = annual_test(y)
     else:
-        b, p = seasonal_mk(s, nyears)
-    res = [[b * 10, p, float(np.nanmean(s))]]
+        b, p, lo, hi = seasonal_mk(s, nyears)
+    res = [[b * 10, p, float(np.nanmean(s)), lo * 10, hi * 10]]
     for g in GROUPS:
         cols = by_year[:, [m - 1 for m in g]]
         ok = np.isfinite(cols).sum(1) == len(g)  # a season counts only if all its months exist
         y = np.where(ok, np.nanmean(cols, axis=1), np.nan)
-        b, p = annual_test(y)
-        res.append([b * 10, p, float(np.nanmean(y))])
+        b, p, lo, hi = annual_test(y)
+        res.append([b * 10, p, float(np.nanmean(y)), lo * 10, hi * 10])
     return res
 
 
@@ -146,9 +170,9 @@ def whole_year(args):
     s, nyears, annual = args
     if annual:
         by_year = s.reshape(nyears, 12)
-        b, p = annual_test(np.where(np.isfinite(by_year).sum(1) >= 9, np.nanmean(by_year, axis=1), np.nan))
+        b, p, _, _ = annual_test(np.where(np.isfinite(by_year).sum(1) >= 9, np.nanmean(by_year, axis=1), np.nan))
     else:
-        b, p = seasonal_mk(s, nyears)
+        b, p, _, _ = seasonal_mk(s, nyears)
     return b * 10, p
 
 
@@ -219,7 +243,8 @@ if __name__ == "__main__":
             have = [d for d in ids if d in series]
             arr3 = np.array(pool.map(test_one, [(series[d], nyears, m.get("annual", False)) for d in have], chunksize=20))
             q = np.stack([bh(arr3[:, j, 1]) for j in range(arr3.shape[1])], axis=1)
-            data[v] = {d: [[r(arr3[i, j, 0], 3), r(arr3[i, j, 1], 2), r(q[i, j], 2), r(arr3[i, j, 2], 4)]
+            data[v] = {d: [[r(arr3[i, j, 0], 3), r(arr3[i, j, 1], 2), r(q[i, j], 2), r(arr3[i, j, 2], 4),
+                            r(arr3[i, j, 3], 3), r(arr3[i, j, 4], 3)]
                            for j in range(arr3.shape[1])] for i, d in enumerate(have)}
             for i, d in enumerate(have):
                 data.setdefault("_series", {}).setdefault(d, {})[v] = series[d]
@@ -252,7 +277,7 @@ if __name__ == "__main__":
         "periods": PERIODS,
         "period_labels": {**SEASON_LABEL, **{f"m{m:02d}": m for m in range(1, 13)}},
         "vars": meta,
-        "fields": ["slope_per_decade", "p", "q", "mean"],
+        "fields": ["slope_per_decade", "p", "q", "mean", "ci95_low_per_decade", "ci95_high_per_decade"],
         "d": {d: {v: data[v][d] for v in meta if d in data[v]} for d in ids},
     }
     (WEB / "trends.json").write_text(json.dumps(trends, separators=(",", ":"), ensure_ascii=False))

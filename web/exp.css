@@ -10,7 +10,7 @@
 .exp-only { display: none; }
 
 body.exp {
-  --sci: #FF6B5B; --sci-dim: rgba(127, 227, 212, .28); --panel: rgba(16, 27, 52, .6); --line: rgba(244,237,224,.14);
+  --sci: #FF6B5B; --sci-dim: rgba(127, 227, 212, .28); --panel: rgba(16, 27, 52, .42); --line: rgba(244,237,224,.14);
   --accent: #FF6B5B; --bar: 40px; --foot: 34px;
 }
 :root { --sci: #FF6B5B; }
@@ -119,3 +119,4 @@ body.exp #topbar, body.exp #botbar { -webkit-backdrop-filter: blur(18px) saturat
 body.exp .vrow, body.exp .seg, body.exp .pstat div, body.exp .verdict, body.exp .aibox, body.exp input[type=search], body.exp select, body.exp input[type=date] { border-radius: 4px; }
 body.exp .seg button[aria-pressed=true], body.exp #modeTabs button[aria-selected=true], body.exp .chips button[aria-pressed=true] { background: var(--coral); border-color: var(--coral); color: #fff; }
 body.exp #uiToggle[aria-pressed=true] .led { background: var(--coral); box-shadow: 0 0 8px var(--coral); }
+body.exp .panel { border-radius: 8px; }

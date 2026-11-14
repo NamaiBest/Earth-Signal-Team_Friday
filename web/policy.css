@@ -77,3 +77,8 @@ body.policy-mode.exp #board, body.policy-mode #legend { display: none; }
 .aibox .pbtns button[disabled] { opacity: .5; cursor: wait; }
 body.exp .aibox, body.exp .ask input, body.exp .ask button { border-radius: 2px; }
 body.exp .ask button { background: var(--sci); }
+
+/* issue, alert and watchlist titles in M PLUS Code Latin */
+ol.issues .tx, .alert, #policy .src > span:last-child { font-family: "M PLUS Code Latin", var(--sans); font-weight: 400; font-size: 13.5px; letter-spacing: -.01em; }
+ol.issues .tx b, .alert b, #policy .src b { font-weight: 600; }
+ol.issues small, .alert small, #policy .src small { font-family: var(--mono); letter-spacing: 0; }

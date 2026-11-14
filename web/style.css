@@ -1,5 +1,5 @@
 :root {
-  --bg: #14213D; --panel: rgba(20, 33, 61, .7); --line: rgba(244,237,224,.16); --text: #F4EDE0; --dim: rgba(244,237,224,.64);
+  --bg: #14213D; --panel: rgba(20, 33, 61, .40); --line: rgba(244,237,224,.16); --text: #F4EDE0; --dim: rgba(244,237,224,.64);
   --up: #FF6B5B; --down: #7FB2FF; --mid: #F4EDE0; --accent: #FF6B5B;
   --sans: "Outfit", system-ui, sans-serif; --mono: "DM Mono", ui-monospace, monospace;
 }
@@ -174,3 +174,30 @@ section.step h2 .n { background: var(--coral); color: #fff; }
 @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) { :root { --panel: rgba(20,33,61,.92); } }
 .maplibregl-ctrl-attrib, .maplibregl-ctrl-attrib-inner { color: rgba(244,237,224,.75) !important; }
 .up { color: #FF8A7C; }
+
+/* ---------- liquid glass v2: more see-through, stronger refraction, specular edges ---------- */
+.panel, #modeTabs, #uiToggle, .maplibregl-popup-content {
+  background:
+    radial-gradient(120% 60% at 0% 0%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%),
+    radial-gradient(90% 50% at 100% 100%, rgba(255,107,91,.16), rgba(255,107,91,0) 60%),
+    linear-gradient(135deg, rgba(244,237,224,.14), rgba(244,237,224,.02) 45%, rgba(244,237,224,.08)),
+    var(--panel);
+  border: 1px solid rgba(255,255,255,.34);
+  -webkit-backdrop-filter: blur(30px) saturate(1.9) brightness(.78) contrast(1.05);
+  backdrop-filter: blur(30px) saturate(1.9) brightness(.78) contrast(1.05);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,.5), inset 1.5px 0 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(255,255,255,.1),
+    inset 0 0 28px rgba(244,237,224,.07), 0 24px 60px rgba(6,10,24,.5), 0 2px 6px rgba(6,10,24,.3);
+}
+.panel { border-radius: 26px; }
+.vrow, .seg, .pstat div, .verdict, .aibox, input[type=search], select, input[type=date], .ask input {
+  background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.22); box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+}
+.vrow[aria-pressed=true], .seg button[aria-pressed=true], #modeTabs button[aria-selected=true] {
+  background: linear-gradient(180deg, #fffaf0, var(--cream)); box-shadow: inset 0 1px 0 #fff, 0 4px 14px rgba(6,10,24,.35);
+}
+.readout { background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.03)), rgba(20,33,61,.72); border: 1px solid rgba(255,255,255,.24);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6); backdrop-filter: blur(20px) saturate(1.6); }
+.pbtns button:first-child, .ask button { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 18px rgba(255,107,91,.35); }
+body { text-shadow: 0 1px 2px rgba(10,18,36,.35); }
+.vrow[aria-pressed=true], .seg button[aria-pressed=true], #modeTabs button[aria-selected=true], .pbtns button, .ask button, .cite, .fid, .tag { text-shadow: none; }

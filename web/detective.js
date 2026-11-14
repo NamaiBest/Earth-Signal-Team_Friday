@@ -20,6 +20,17 @@
         <button type="button" data-d="2" aria-pressed="true">2D</button><button type="button" data-d="3" aria-pressed="false">3D</button>`));
     q('#dim3').setAttribute('aria-label', 'Flat or 3D map');
 
+    // hide / show the left panel for a full-screen map
+    for (const sel of ['#controls > header', '#policy > header']) {
+      const x = make('button', { type: 'button', className: 'phide', title: 'Hide this panel' }, '×');
+      x.setAttribute('aria-label', 'Hide panel');
+      x.onclick = () => { document.body.classList.add('nopanel'); q('#pshow').focus(); };
+      q(sel).append(x);
+    }
+    const show = make('button', { id: 'pshow', type: 'button', title: 'Show the panel' }, '<span aria-hidden="true">☰</span> Show panel');
+    show.onclick = () => document.body.classList.remove('nopanel');
+    document.body.append(show);
+
     // faint graticule, every 10 degrees
     const lines = [];
     for (let lon = -180; lon < 180; lon += 10) lines.push(Array.from({ length: 35 }, (_, i) => [lon, -85 + i * 5]));

@@ -216,8 +216,8 @@
     };
   }
   function aiBlock() {
-    const out = ai.busy ? '<p class="empty">Claude is reading the evidence…</p>' : ai.text ? `<div class="aitext">${md(ai.text)}</div>${checkNumbers(ai.text)}<p class="note">${esc(ai.meta)}</p>` : '<p class="note">Claude drafts a brief from the issues, alerts and sources below, citing each by ID. Every number is checked against the data.</p>';
-    return `<div class="aibox"><h3>AI brief <span class="hint">Claude, grounded in this page</span></h3>${out}
+    const out = ai.busy ? '<p class="empty">The AI is reading the evidence…</p>' : ai.text ? `<div class="aitext">${md(ai.text)}</div>${checkNumbers(ai.text)}<p class="note">${esc(ai.meta)}</p>` : '<p class="note">The AI (Gemini) drafts a brief from the issues, alerts and sources below, citing each by ID. Every number is checked against the data.</p>';
+    return `<div class="aibox"><h3>AI brief <span class="hint">grounded in this page</span></h3>${out}
       <div class="pbtns"><button type="button" id="aiGo" ${ai.busy ? 'disabled' : ''}>${ai.text ? 'Regenerate brief' : 'Generate AI brief'}</button></div>
       <div class="ask"><input id="aiQ" type="search" placeholder="Ask about this area, e.g. which issue is most certain?" value="${esc(ai.q)}" aria-label="Ask about this area"><button type="button" id="aiAsk">Ask</button></div>
       ${ai.answer ? `<div class="aitext answer">${md(ai.answer)}</div>${checkNumbers(ai.answer)}` : ''}</div>`;
@@ -282,7 +282,7 @@
       : `<p class="numcheck ok">✓ Every number matches the data on this page (${nums.length} checked).</p>`;
   }
   function aiDoc(c) {
-    return [`# AI-assisted evidence brief: ${scope.name}`, `Drafted with Claude from EarthSignal facts (${new Date().toISOString().slice(0, 10)}). Fact IDs refer to the tables below.`, '', ai.text, '', '---', '', brief(c)].join('\n');
+    return [`# AI-assisted evidence brief: ${scope.name}`, `Drafted by an AI model from EarthSignal facts (${new Date().toISOString().slice(0, 10)}). Fact IDs refer to the tables below.`, '', ai.text, '', '---', '', brief(c)].join('\n');
   }
 
   // ---------- brief ----------

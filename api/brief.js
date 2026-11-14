@@ -1,9 +1,13 @@
 // Vercel serverless function: AI-assisted policy brief (EarthSignal Policy v2).
 // POST /api/brief  { mode: "brief" | "ask", question?, facts, code? }
-// Claude writes ONLY from the facts the page computed (issues, alerts, sources), citing their IDs.
-// Env: ANTHROPIC_API_KEY (required), CLAUDE_MODEL (optional), ACCESS_CODE (optional shared passcode).
+// The model writes ONLY from the facts the page computed (issues, alerts, sources), citing their IDs.
+// Env (one key is enough):
+//   GEMINI_API_KEY  Google AI Studio key -> Gemini (used first)    GEMINI_MODEL (default gemini-3.8-flash)
+//   ANTHROPIC_API_KEY                    -> Claude (fallback)       CLAUDE_MODEL (default claude-sonnet-5-5)
+//   ACCESS_CODE (optional shared passcode)
 
-const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5-5';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5-5';
 const MAX_FACTS_BYTES = 60_000;
 const hits = new Map(); // light per-instance rate limit: 20 requests / 10 min / IP
 
@@ -35,8 +39,8 @@ function clientIp(req) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST' });
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ error: 'not_configured', message: 'AI is not configured: add ANTHROPIC_API_KEY in Vercel → Project → Settings → Environment Variables, then redeploy.' });
+  if (!process.env.GEMINI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+    return res.status(503).json({ error: 'not_configured', message: 'AI is not configured: add GEMINI_API_KEY (Google AI Studio) in Vercel → Project → Settings → Environment Variables, then redeploy.' });
   }
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
   if (process.env.ACCESS_CODE && body.code !== process.env.ACCESS_CODE) return res.status(401).json({ error: 'access_code', message: 'Access code required.' });
@@ -54,23 +58,43 @@ export default async function handler(req, res) {
   const task = mode === 'brief' ? BRIEF
     : `Answer the official's question in at most 200 words using the rules. If FACTS cannot answer it, say so and say what data would. Question: ${question}`;
 
+  const prompt = `FACTS:\n${facts}\n\nTASK:\n${task}`;
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: mode === 'brief' ? 1400 : 600,
-        temperature: 0.2,
-        system: SYSTEM,
-        messages: [{ role: 'user', content: `FACTS:\n${facts}\n\nTASK:\n${task}` }],
-      }),
-    });
-    const data = await r.json();
-    if (!r.ok) return res.status(502).json({ error: 'upstream', message: data?.error?.message || `Claude API error ${r.status}` });
-    const text = (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('\n').trim();
-    return res.status(200).json({ text, model: data.model || MODEL, usage: data.usage || null });
+    const out = process.env.GEMINI_API_KEY ? await gemini(prompt, mode) : await claude(prompt, mode);
+    return res.status(200).json(out);
   } catch (e) {
-    return res.status(502).json({ error: 'network', message: String(e.message || e) });
+    return res.status(502).json({ error: 'upstream', message: String(e.message || e) });
   }
+}
+
+async function gemini(prompt, mode) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYSTEM }] },
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.2, maxOutputTokens: mode === 'brief' ? 4096 : 2048 },
+    }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.error?.message || `Gemini API error ${r.status}`);
+  const cand = (data.candidates || [])[0];
+  const text = (cand?.content?.parts || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('').trim();
+  if (!text) throw new Error(`Gemini returned no text (${cand?.finishReason || data?.promptFeedback?.blockReason || 'unknown reason'})`);
+  return { text, model: data.modelVersion || GEMINI_MODEL, usage: data.usageMetadata || null };
+}
+
+async function claude(prompt, mode) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: CLAUDE_MODEL, max_tokens: mode === 'brief' ? 1400 : 600, temperature: 0.2, system: SYSTEM,
+      messages: [{ role: 'user', content: prompt }] }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.error?.message || `Claude API error ${r.status}`);
+  const text = (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('\n').trim();
+  return { text, model: data.model || CLAUDE_MODEL, usage: data.usage || null };
 }

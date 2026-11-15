@@ -1,0 +1,32 @@
+<template>
+  <style>
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.ttf"); font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0E1830; font-family: "Outfit", sans-serif; color: #F4EDE0; }
+    .cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .cam img.shot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .chip { position: absolute; padding: 14px 26px; border-radius: 999px; white-space: nowrap; font-family: "DM Mono", monospace; font-weight: 500; font-size: 28px; letter-spacing: 3px; color: #F4EDE0;
+      background: rgba(10,17,36,.86); border: 1px solid rgba(244,237,224,.3); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+    .chip.hot { color: #FF8B7D; border-color: rgba(255,107,91,.65); }
+    .hl { position: absolute; border: 4px solid #FF6B5B; border-radius: 16px; box-shadow: 0 0 0 6px rgba(255,107,91,.18), 0 0 40px rgba(255,107,91,.45); opacity: 0; }
+    .cursor { position: absolute; left: 0; top: 0; width: 44px; height: 54px; }
+  </style>
+  <div id="root" data-composition-id="assemble" data-width="1920" data-height="1080">
+    <img id="as-map" class="shot" style="position:absolute;left:0;top:0;width:1920px;height:1080px" src="assets/app/q_bare.jpg" alt="District trends across India">
+    <img id="as-controls" style="position:absolute;left:10px;top:10px;width:344px;height:1060px;border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.45)" src="assets/app/ui_controls.png" alt="Detect panel">
+    <img id="as-tabs" style="position:absolute;left:885px;top:10px;width:149px;height:40px" src="assets/app/ui_tabs.png" alt="Detect and Policy tabs">
+    <img id="as-strip" style="position:absolute;left:669px;top:1040px;width:441px;height:32px" src="assets/app/ui_strip.png" alt="Readout strip">
+    <img id="as-dim3" style="position:absolute;left:1771px;top:1010px;width:93px;height:38px" src="assets/app/ui_dim3.png" alt="2D and 3D switch">
+    <p id="as-pill" class="chip" style="left:600px;top:74px;font-size:30px;padding:18px 34px">735 DISTRICTS · <span style="color:#FF6B5B">11 NASA VARIABLES</span> · 2001–2025</p>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#as-map", { opacity: 0, scale: 0.72, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 0);
+    tl.fromTo("#as-controls", { x: -440, opacity: 0, filter: "blur(16px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 0.12);
+    tl.fromTo("#as-tabs", { y: -70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.38, ease: "back.out(1.6)" }, 0.24);
+    tl.fromTo("#as-strip", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.38, ease: "expo.out" }, 0.3);
+    tl.fromTo("#as-dim3", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(1.8)" }, 0.36);
+    tl.fromTo("#as-pill", { opacity: 0, y: 20, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.28, ease: "expo.out" }, 0.32);
+    tl.to("#as-pill", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 1.28);
+    window.__timelines["assemble"] = tl;
+  </script>
+</template>

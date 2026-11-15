@@ -1,0 +1,76 @@
+<template>
+  <style>
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Regular.ttf"); font-weight: 400; }
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.ttf"); font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Outfit", sans-serif; color: #F4EDE0; }
+    #ti-bg { position: absolute; inset: 0; background: linear-gradient(135deg, #0E1830 0%, #14213D 55%, #1F2C52 100%); }
+    .orb { position: absolute; border-radius: 50%; }
+    #ti-orb1 { left: 1100px; top: -220px; width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(255,107,91,.42) 0%, rgba(255,107,91,0) 70%); }
+    #ti-orb2 { left: -300px; top: 520px; width: 900px; height: 900px; background: radial-gradient(circle, rgba(127,178,255,.26) 0%, rgba(127,178,255,0) 70%); }
+    #ti-eyebrow { position: absolute; left: 140px; top: 150px; font-family: "DM Mono", monospace; font-weight: 500; font-size: 28px; letter-spacing: 6px; text-transform: uppercase; color: #FF6B5B; }
+    #ti-chal { position: absolute; left: 140px; top: 196px; display: flex; align-items: center; gap: 16px; font-weight: 500; font-size: 54px; white-space: nowrap; }
+    #ti-chal svg { flex: 0 0 auto; }
+    #ti-globe { position: absolute; left: 1300px; top: 96px; width: 470px; height: 470px; border-radius: 50%; overflow: hidden;
+      box-shadow: 0 0 0 2px rgba(127,178,255,.35), 0 0 90px 10px rgba(127,178,255,.28), 0 30px 80px rgba(0,0,0,.5); }
+    #ti-globe video { position: absolute; left: -45px; top: -45px; width: 560px; height: 560px; }
+    #ti-name { position: absolute; left: 132px; top: 282px; font-weight: 600; font-size: 200px; line-height: 1; letter-spacing: -6px; white-space: nowrap; }
+    #ti-name span { display: inline-block; }
+    #ti-tag { position: absolute; left: 140px; top: 520px; font-weight: 300; font-size: 48px; white-space: nowrap; }
+    #ti-tag b { color: #FF6B5B; font-weight: 500; }
+    #ti-strip { position: absolute; left: 140px; right: 140px; bottom: 80px; height: 196px; padding: 0 48px; display: flex; align-items: center; gap: 48px; border-radius: 34px;
+      background: linear-gradient(160deg, rgba(244,237,224,.16), rgba(244,237,224,.05)); border: 1px solid rgba(244,237,224,.30);
+      box-shadow: 0 24px 60px rgba(4,8,20,.45), inset 0 1px 0 rgba(255,255,255,.28); }
+    #ti-team { font-weight: 600; font-size: 46px; white-space: nowrap; }
+    #ti-team b { color: #FF6B5B; font-weight: 600; }
+    .rule { width: 1px; height: 96px; background: rgba(244,237,224,.3); }
+    .mems { display: flex; flex: 1; justify-content: space-around; align-items: center; }
+    .mem { display: flex; align-items: center; gap: 22px; }
+    .ph { position: relative; width: 150px; height: 150px; }
+    .ph .face { position: absolute; left: 8px; top: 8px; width: 134px; height: 134px; border-radius: 50%; overflow: hidden; background: #1F2C52; }
+    .ph .face img { width: 134px; height: 134px; object-fit: cover; }
+    .ph svg { position: absolute; left: 0; top: 0; }
+    .mem p { font-weight: 500; font-size: 40px; white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="title" data-width="1920" data-height="1080">
+    <div id="ti-bg"></div>
+    <div id="ti-orb1" class="orb"></div>
+    <div id="ti-orb2" class="orb"></div>
+    <p id="ti-eyebrow">NASA Space Apps 2026 · Our challenge</p>
+    <p id="ti-chal"><svg width="50" height="50" viewBox="0 0 50 50" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="#FF6B5B" stroke-width="5"/><line x1="31" y1="31" x2="45" y2="45" stroke="#FF6B5B" stroke-width="6" stroke-linecap="round"/></svg>Be an Earth System Trend Detective!</p>
+    <div id="ti-globe"><video id="ti-earth" class="clip" src="assets/clips/earth.mp4" data-start="0" data-duration="2.35" muted playsinline></video></div>
+    <h1 id="ti-name"><span>E</span><span>a</span><span>r</span><span>t</span><span>h</span><span style="color:#FF6B5B">S</span><span style="color:#FF6B5B">i</span><span style="color:#FF6B5B">g</span><span style="color:#FF6B5B">n</span><span style="color:#FF6B5B">a</span><span style="color:#FF6B5B">l</span></h1>
+    <p id="ti-tag">Every trend is a <b>suspect</b>, until the data proves it.</p>
+    <div id="ti-strip">
+      <p id="ti-team">We’re <b>Team Friday</b></p>
+      <div class="rule"></div>
+      <div class="mems">
+        <div id="ti-m1" class="mem"><div class="ph"><div class="face"><img id="ti-f1" src="assets/img/aditya.jpg" alt="Aditya"></div><svg width="150" height="150" viewBox="0 0 124 124"><circle id="ti-r1" cx="62" cy="62" r="59" fill="none" stroke="#FF6B5B" stroke-width="3.5" stroke-linecap="round" transform="rotate(-90 62 62)" stroke-dasharray="371"/></svg></div><p id="ti-n1">Aditya</p></div>
+        <div id="ti-m2" class="mem"><div class="ph"><div class="face"><img id="ti-f2" src="assets/img/namai.jpg" alt="Namai"></div><svg width="150" height="150" viewBox="0 0 124 124"><circle id="ti-r2" cx="62" cy="62" r="59" fill="none" stroke="#FF6B5B" stroke-width="3.5" stroke-linecap="round" transform="rotate(-90 62 62)" stroke-dasharray="371"/></svg></div><p id="ti-n2">Namai</p></div>
+        <div id="ti-m3" class="mem"><div class="ph"><div class="face"><img id="ti-f3" src="assets/img/lavish.jpg" alt="Lavish"></div><svg width="150" height="150" viewBox="0 0 124 124"><circle id="ti-r3" cx="62" cy="62" r="59" fill="none" stroke="#FF6B5B" stroke-width="3.5" stroke-linecap="round" transform="rotate(-90 62 62)" stroke-dasharray="371"/></svg></div><p id="ti-n3">Lavish</p></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // scene clock starts at 3.6 s; speech: "We're" 3.65, "Team Friday" 3.82–4.4, "this is EarthSignal" 4.57–5.6
+    tl.fromTo("#ti-bg", { opacity: 0 }, { opacity: 1, duration: 0.16, ease: "power2.out" }, 0);
+    tl.fromTo("#ti-orb1", { opacity: 0, scale: 0.8, x: 0 }, { opacity: 1, scale: 1, x: -60, duration: 2.35, ease: "power2.out" }, 0);
+    tl.fromTo("#ti-orb2", { opacity: 0, x: 0 }, { opacity: 1, x: 50, duration: 2.35, ease: "power2.out" }, 0);
+    tl.fromTo("#ti-strip", { opacity: 0, y: 90 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, 0.0);
+    tl.fromTo("#ti-team", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.08);
+    [1, 2, 3].forEach((i) => {
+      const t = 0.3 + (i - 1) * 0.17;
+      tl.fromTo(`#ti-m${i} .ph`, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.7)" }, t);
+      tl.fromTo(`#ti-f${i}`, { scale: 1.35 }, { scale: 1.0, duration: 0.8, ease: "power3.out" }, t);
+      tl.fromTo(`#ti-r${i}`, { strokeDashoffset: 371 }, { strokeDashoffset: 0, duration: 0.45, ease: "power2.inOut" }, t + 0.1);
+      tl.fromTo(`#ti-n${i}`, { opacity: 0, x: -16, filter: "blur(6px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, t + 0.15);
+    });
+    tl.fromTo("#ti-eyebrow", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.1);
+    tl.fromTo("#ti-chal", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.2);
+    tl.fromTo("#ti-globe", { opacity: 0, scale: 0.82, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, 0.1);
+    tl.fromTo("#ti-name span", { opacity: 0, y: 70, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "expo.out", stagger: 0.035 }, 0.95);
+    tl.fromTo("#ti-tag", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 1.45);
+    tl.to(["#ti-eyebrow", "#ti-chal", "#ti-name", "#ti-tag", "#ti-globe", "#ti-strip"], { opacity: 0, filter: "blur(10px)", y: -20, duration: 0.2, ease: "power3.in", stagger: 0.02 }, 2.18);
+    window.__timelines["title"] = tl;
+  </script>
+</template>

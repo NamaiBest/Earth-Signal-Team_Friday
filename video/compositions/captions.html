@@ -1,0 +1,40 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; pointer-events: none; font-family: "Outfit", sans-serif; }
+    .cap { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); max-width: 1500px; padding: 14px 34px; border-radius: 999px; white-space: nowrap; text-align: center;
+      font-size: 42px; font-weight: 500; color: #F4EDE0; background: rgba(10,17,36,.84); border: 1px solid rgba(244,237,224,.22); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+    .cap b { color: #FF8B7D; font-weight: 600; }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080" data-layout-allow-caption-zone>
+    <p id="cap-1" class="cap clip" data-start="5.82" data-duration="1.18">It reads NASA satellite data</p>
+    <p id="cap-2" class="cap clip" data-start="7.0" data-duration="1.5">for every district in India,</p>
+    <p id="cap-3" class="cap clip" data-start="8.5" data-duration="2.05">and tells you what changes are <b>significant</b>.</p>
+    <p id="cap-4" class="cap clip" data-start="10.75" data-duration="2.17">Open any district’s case files:</p>
+    <p id="cap-5" class="cap clip" data-start="12.95" data-duration="1.53">what’s rising, how fast,</p>
+    <p id="cap-6" class="cap clip" data-start="14.5" data-duration="1.12">which factories sit nearby.</p>
+    <p id="cap-7" class="cap clip" data-start="15.66" data-duration="1.22">Click <b>Policy</b>,</p>
+    <p id="cap-8" class="cap clip" data-start="16.9" data-duration="1.92">and it ranks the <b>confirmed problems</b> in your area</p>
+    <p id="cap-9" class="cap clip" data-start="18.84" data-duration="0.78">with an AI brief,</p>
+    <p id="cap-10" class="cap clip" data-start="19.64" data-duration="2.34">so the government knows <b>exactly where to act</b>.</p>
+    <p id="cap-11" class="cap clip" data-start="22.0" data-duration="2.45">And students can explore the changes we’ve mapped</p>
+    <p id="cap-12" class="cap clip" data-start="24.48" data-duration="1.62">and investigate at their own pace.</p>
+    <p id="cap-13" class="cap clip" data-start="26.3" data-duration="1.1">Thank you.</p>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#cap-1", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 5.82);
+    tl.fromTo("#cap-2", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 7.0);
+    tl.fromTo("#cap-3", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 8.5);
+    tl.fromTo("#cap-4", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 10.75);
+    tl.fromTo("#cap-5", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 12.95);
+    tl.fromTo("#cap-6", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 14.5);
+    tl.fromTo("#cap-7", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 15.66);
+    tl.fromTo("#cap-8", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 16.9);
+    tl.fromTo("#cap-9", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 18.84);
+    tl.fromTo("#cap-10", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 19.64);
+    tl.fromTo("#cap-11", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 22.0);
+    tl.fromTo("#cap-12", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 24.48);
+    tl.fromTo("#cap-13", { opacity: 0, y: 10, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 26.3);
+    window.__timelines["captions"] = tl;
+  </script>
+</template>

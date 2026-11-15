@@ -1,0 +1,37 @@
+<template>
+  <style>
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.ttf"); font-weight: 500; }
+    #root { position: absolute; inset: 0; pointer-events: none; font-family: "Outfit", sans-serif; color: #F4EDE0; }
+    .beat { position: absolute; left: 400px; width: 1120px; top: 66px; padding: 18px 40px 22px; text-align: center; border-radius: 28px;
+      background: linear-gradient(160deg, rgba(20,33,61,.94), rgba(14,24,48,.9)); border: 1px solid rgba(255,107,91,.55); box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+    .lab { font-family: "DM Mono", monospace; font-weight: 500; font-size: 26px; letter-spacing: 5px; color: #FF6B5B; }
+    .main { font-size: 48px; font-weight: 600; line-height: 1.15; margin-top: 6px; white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="beats" data-width="1920" data-height="1080">
+    <div id="bt-1" class="beat clip" data-start="6.05" data-duration="0.95"><p class="lab">CLUE SOURCE</p><p class="main">25 years of NASA satellite records</p></div>
+    <div id="bt-2" class="beat clip" data-start="8.55" data-duration="2.1"><p class="lab">THE QUESTION</p><p class="main">Real trend, or just noise? Every district is tested.</p></div>
+    <div id="bt-3" class="beat clip" data-start="11.0" data-duration="1.92"><p class="lab">STEP 1 · OPEN THE CASE</p><p class="main">Pick any district in India</p></div>
+    <div id="bt-4" class="beat clip" data-start="12.95" data-duration="1.52"><p class="lab">STEP 2 · CHECK THE EVIDENCE</p><p class="main">How much it changed, and how sure we are</p></div>
+    <div id="bt-5" class="beat clip" data-start="14.5" data-duration="1.1"><p class="lab">STEP 3 · LINE UP THE SUSPECTS</p><p class="main">Factories and power plants nearby</p></div>
+    <div id="bt-6" class="beat clip" data-start="16.9" data-duration="5.02"><p class="lab">STEP 4 · CLOSE THE CASE</p><p class="main">Confirmed problems, ranked for action</p></div>
+    <div id="bt-7" class="beat clip" data-start="22.05" data-duration="3.83"><p class="lab">YOUR TURN</p><p class="main">Learn to read the trends, then investigate</p></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#bt-1", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 6.05);
+    tl.to("#bt-1", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 6.85);
+    tl.fromTo("#bt-2", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 8.55);
+    tl.to("#bt-2", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 10.5);
+    tl.fromTo("#bt-3", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 11.0);
+    tl.to("#bt-3", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 12.77);
+    tl.fromTo("#bt-4", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 12.95);
+    tl.to("#bt-4", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 14.32);
+    tl.fromTo("#bt-5", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 14.5);
+    tl.to("#bt-5", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 15.45);
+    tl.fromTo("#bt-6", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 16.9);
+    tl.to("#bt-6", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 21.77);
+    tl.fromTo("#bt-7", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 22.05);
+    tl.to("#bt-7", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 25.73);
+    window.__timelines["beats"] = tl;
+  </script>
+</template>

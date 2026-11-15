@@ -1,0 +1,68 @@
+<template>
+  <style>
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.ttf"); font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0E1830; font-family: "Outfit", sans-serif; color: #F4EDE0; }
+    .cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .cam img.shot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .chip { position: absolute; padding: 14px 26px; border-radius: 999px; white-space: nowrap; font-family: "DM Mono", monospace; font-weight: 500; font-size: 28px; letter-spacing: 3px; color: #F4EDE0;
+      background: rgba(10,17,36,.86); border: 1px solid rgba(244,237,224,.3); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+    .chip.hot { color: #FF8B7D; border-color: rgba(255,107,91,.65); }
+    .hl { position: absolute; border: 4px solid #FF6B5B; border-radius: 16px; box-shadow: 0 0 0 6px rgba(255,107,91,.18), 0 0 40px rgba(255,107,91,.45); opacity: 0; }
+    .cursor { position: absolute; left: 0; top: 0; width: 44px; height: 54px; }
+    .fac { position: absolute; display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 16px; background: rgba(10,17,36,.9); border: 2px solid #FF6B5B; box-shadow: 0 16px 40px rgba(0,0,0,.45); opacity: 0; white-space: nowrap; }
+    .fac b { display: block; font-size: 28px; font-weight: 600; }
+    .fac small { display: block; font-family: "DM Mono", monospace; font-size: 22px; color: #C9CBD3; }
+    .facdot { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 4px solid #FF6B5B; box-shadow: 0 0 20px rgba(255,107,91,.8); opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="case" data-width="1920" data-height="1080">
+    <div id="cs-cam1" class="cam" data-layout-allow-overflow><img class="shot" src="assets/app/q_no2.jpg" alt="Nitrogen dioxide trends across India"></div>
+    <div id="cs-cam2" class="cam" data-layout-allow-overflow>
+      <img class="shot" src="assets/app/q_case.jpg" alt="Jharsuguda case file">
+      <div id="cs-hl2" class="hl" style="left:1519px;top:230px;width:378px;height:85px"></div>
+    </div>
+    <div id="cs-cam3" class="cam" data-layout-allow-overflow>
+      <img class="shot" src="assets/app/q_cal.jpg" alt="Month-by-month heatmap in the case file">
+      <div id="cs-hl3" class="hl" style="left:1519px;top:190px;width:378px;height:223px"></div>
+      <svg id="cs-lines" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0" aria-hidden="true"><line id="cs-lnA" x1="730" y1="366" x2="890" y2="444" stroke="#FF6B5B" stroke-width="3" stroke-dasharray="600" stroke-dashoffset="600"/><line id="cs-lnB" x1="730" y1="736" x2="872" y2="607" stroke="#FF6B5B" stroke-width="3" stroke-dasharray="600" stroke-dashoffset="600"/><line id="cs-lnC" x1="1020" y1="736" x2="961" y2="566" stroke="#FF6B5B" stroke-width="3" stroke-dasharray="600" stroke-dashoffset="600"/></svg>
+      <div id="cs-dotA" class="facdot" style="left:890px;top:444px"></div>
+      <div id="cs-facA" class="fac" style="left:430px;top:330px"><svg width="34" height="30" viewBox="0 0 34 30" aria-hidden="true"><path d="M2 28 V14 L10 9 V14 L18 9 V14 L26 9 V3 H31 V28 Z" fill="#FF6B5B"/><rect x="6" y="19" width="4" height="4" fill="#0E1830"/><rect x="14" y="19" width="4" height="4" fill="#0E1830"/><rect x="22" y="19" width="4" height="4" fill="#0E1830"/></svg><div><b>Darlipali power station</b><small>Power plant · 17 km</small></div></div>
+      <div id="cs-dotB" class="facdot" style="left:872px;top:607px"></div>
+      <div id="cs-facB" class="fac" style="left:430px;top:700px"><svg width="34" height="30" viewBox="0 0 34 30" aria-hidden="true"><path d="M2 28 V14 L10 9 V14 L18 9 V14 L26 9 V3 H31 V28 Z" fill="#FF6B5B"/><rect x="6" y="19" width="4" height="4" fill="#0E1830"/><rect x="14" y="19" width="4" height="4" fill="#0E1830"/><rect x="22" y="19" width="4" height="4" fill="#0E1830"/></svg><div><b>Ib Valley thermal power station</b><small>Power plant · 23 km</small></div></div>
+      <div id="cs-dotC" class="facdot" style="left:961px;top:566px"></div>
+      <div id="cs-facC" class="fac" style="left:1020px;top:700px"><svg width="34" height="30" viewBox="0 0 34 30" aria-hidden="true"><path d="M2 28 V14 L10 9 V14 L18 9 V14 L26 9 V3 H31 V28 Z" fill="#FF6B5B"/><rect x="6" y="19" width="4" height="4" fill="#0E1830"/><rect x="14" y="19" width="4" height="4" fill="#0E1830"/><rect x="22" y="19" width="4" height="4" fill="#0E1830"/></svg><div><b>JSW steel plant</b><small>Steel · 10 km</small></div></div>
+    </div>
+    <p id="cs-chip1" data-hidden class="chip hot" style="left:420px;top:70px">VERDICT · +49% PER DECADE · 95% RANGE</p>
+    <p id="cs-chip2" data-hidden class="chip" style="left:420px;top:70px">MONTH BY MONTH · SOLID = SIGNIFICANT</p>
+    <p id="cs-chip3" data-hidden class="chip hot" style="left:420px;top:70px">NEARBY SOURCES · CLIMATE TRACE · NOT PROOF</p>
+    <svg class="cursor" id="cs-cur" viewBox="0 0 22 27" width="44" height="54"><path d="M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.5 L18.5 15.5 Z" fill="#F4EDE0" stroke="#0E1830" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // whole site in view: the cursor clicks Jharsuguda, the case file opens, then scrolls to the heatmap
+    tl.fromTo("#cs-cur", { x: 1300, y: 760, scale: 1 }, { x: 1045, y: 554, duration: 0.7, ease: "power3.inOut" }, 0.05);
+    tl.to("#cs-cur", { scale: 0.82, duration: 0.07, ease: "power2.in" }, 0.8);
+    tl.to("#cs-cur", { scale: 1, opacity: 0, duration: 0.2, ease: "power2.out" }, 0.87);
+    tl.fromTo("#cs-cam1", { x: 0, y: 0, scale: 1 }, { x: 960 - 1045 * 1.5, y: 540 - 554 * 1.5, scale: 1.5, duration: 0.45, ease: "power2.in" }, 0.9);
+    tl.fromTo("#cs-cam2", { opacity: 0, x: 0, y: 0, scale: 1.05, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, 1.25);
+    tl.fromTo("#cs-hl2", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.25, ease: "expo.out" }, 2.28);
+    tl.fromTo("#cs-chip1", { opacity: 0, y: -14, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.25, ease: "expo.out" }, 2.3);
+    tl.to("#cs-chip1", { opacity: 0, filter: "blur(6px)", duration: 0.12 }, 3.05);
+    tl.fromTo("#cs-cam3", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 3.1);
+    tl.fromTo("#cs-hl3", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.25, ease: "expo.out" }, 3.3);
+    tl.fromTo("#cs-chip2", { opacity: 0, y: -14, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.25, ease: "expo.out" }, 3.3);
+    tl.to("#cs-chip2", { opacity: 0, filter: "blur(6px)", duration: 0.12 }, 3.8);
+    tl.to("#cs-hl3", { opacity: 0, duration: 0.2 }, 3.8);
+    tl.fromTo("#cs-dotA", { opacity: 0, scale: 2 }, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, 3.85);
+    tl.fromTo("#cs-lnA", { strokeDashoffset: 600 }, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, 3.9);
+    tl.fromTo("#cs-facA", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "expo.out" }, 4.0);
+    tl.fromTo("#cs-dotB", { opacity: 0, scale: 2 }, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, 4.03);
+    tl.fromTo("#cs-lnB", { strokeDashoffset: 600 }, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, 4.08);
+    tl.fromTo("#cs-facB", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "expo.out" }, 4.180000000000001);
+    tl.fromTo("#cs-dotC", { opacity: 0, scale: 2 }, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, 4.21);
+    tl.fromTo("#cs-lnC", { strokeDashoffset: 600 }, { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, 4.26);
+    tl.fromTo("#cs-facC", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "expo.out" }, 4.36);
+
+    
+    window.__timelines["case"] = tl;
+  </script>
+</template>

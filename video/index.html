@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0E1830; }
+      #ground { position: absolute; inset: 0; background: #0E1830; }
+      .fcam { position: absolute; border-radius: 50%; overflow: hidden; z-index: 40; opacity: 0; background: #1F2C52;
+        box-shadow: 0 0 0 5px #FF6B5B, 0 0 0 11px rgba(255,107,91,.22), 0 24px 60px rgba(0,0,0,.55); }
+      .fcam video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+    </style>
+  </head>
+  <body>
+    <div id="main" data-composition-id="main" data-start="0" data-duration="28.4" data-width="1920" data-height="1080" data-fps="60">
+      <div id="ground"></div>
+      <div id="preface" data-composition-id="preface" data-composition-src="compositions/preface.html" data-start="0" data-duration="3.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:2"></div>
+      <div id="title" data-composition-id="title" data-composition-src="compositions/title.html" data-start="3.6" data-duration="2.35" data-track-index="2" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:3"></div>
+      <div id="satglobe" data-composition-id="satglobe" data-composition-src="compositions/satglobe.html" data-start="5.95" data-duration="1.05" data-track-index="3" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:4"></div>
+      <div id="assemble" data-composition-id="assemble" data-composition-src="compositions/assemble.html" data-start="7.0" data-duration="1.45" data-track-index="4" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:5"></div>
+      <div id="vars" data-composition-id="vars" data-composition-src="compositions/vars.html" data-start="8.45" data-duration="2.25" data-track-index="5" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:6"></div>
+      <div id="case" data-composition-id="case" data-composition-src="compositions/case.html" data-start="10.7" data-duration="4.9" data-track-index="6" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:7"></div>
+      <div id="policy" data-composition-id="policy" data-composition-src="compositions/policy.html" data-start="15.6" data-duration="6.35" data-track-index="7" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:8"></div>
+      <div id="learn" data-composition-id="learn" data-composition-src="compositions/learn.html" data-start="21.95" data-duration="4.0" data-track-index="8" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:9"></div>
+      <div id="endcard" data-composition-id="endcard" data-composition-src="compositions/endcard.html" data-start="25.95" data-duration="2.45" data-track-index="9" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:10"></div>
+      <div id="beats" data-composition-id="beats" data-composition-src="compositions/beats.html" data-start="0" data-duration="28.4" data-track-index="19" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index:45"></div>
+      <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="28.4" data-track-index="20" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index:50"></div>
+      <div id="fc1-w" class="fcam" style="left:1560px;top:620px;width:300px;height:300px"><video id="fc1" class="clip" src="assets/vo/face.mp4" data-start="8.3" data-duration="2.35" data-media-start="8.3" muted playsinline></video></div>
+      <div id="fc2-w" class="fcam" style="left:1560px;top:620px;width:300px;height:300px"><video id="fc2" class="clip" src="assets/vo/face.mp4" data-start="16.35" data-duration="3.2" data-media-start="16.35" muted playsinline></video></div>
+
+      <!-- voice: Namai's own recording, levelled to -16 LUFS -->
+      <audio id="voice" class="clip" src="assets/vo/voice.wav" data-start="0" data-duration="27.0" data-volume="1" data-track-index="30"></audio>
+      <!-- music: "Dans le Noir" by SkySonik (Jamendo, CC BY 3.0). Its silence sits under "...in your district?" and its drop lands on the title at 3.6 s -->
+      <audio id="music1" class="clip" src="assets/music/dans_le_noir_skysonik_ccby3.mp3" data-start="0" data-media-start="19.4" data-duration="3.6" data-volume="0.2" data-fade-in="0.3" data-track-index="31"></audio>
+      <audio id="music2" class="clip" src="assets/music/dans_le_noir_skysonik_ccby3.mp3" data-start="3.6" data-media-start="23.0" data-duration="0.6" data-volume="0.34" data-fade-out="0.25" data-track-index="32"></audio>
+      <audio id="music3" class="clip" src="assets/music/dans_le_noir_skysonik_ccby3.mp3" data-start="4.2" data-media-start="23.6" data-duration="22.8" data-volume="0.12" data-fade-in="0.25" data-track-index="33"></audio>
+      <audio id="music4" class="clip" src="assets/music/dans_le_noir_skysonik_ccby3.mp3" data-start="27.0" data-media-start="46.4" data-duration="1.4" data-volume="0.26" data-fade-in="0.3" data-fade-out="1.1" data-track-index="34"></audio>
+      <!-- effects, each on a visible action -->
+      <audio id="sx-riser" class="clip" src=".media/audio/sfx/sfx_004.mp3" data-start="0.13" data-duration="3.45" data-volume="0.12" data-fade-in="0.8" data-track-index="40"></audio>
+      <audio id="sx-wh1" class="clip" src=".media/audio/sfx/sfx_006.mp3" data-start="1.05" data-duration="0.57" data-volume="0.45" data-track-index="41"></audio>
+      <audio id="sx-wh2" class="clip" src=".media/audio/sfx/sfx_001.mp3" data-start="0.45" data-duration="2.0" data-volume="0.3" data-track-index="42"></audio>
+      <audio id="sx-impact" class="clip" src=".media/audio/sfx/sfx_002.mp3" data-start="3.59" data-duration="1.5" data-volume="1.3" data-track-index="43"></audio>
+      <audio id="sx-pop1" class="clip" src=".media/audio/sfx/sfx_005.mp3" data-start="3.92" data-duration="0.36" data-volume="0.6" data-track-index="44"></audio>
+      <audio id="sx-pop2" class="clip" src=".media/audio/sfx/sfx_005.mp3" data-start="4.09" data-duration="0.36" data-volume="0.5" data-track-index="45"></audio>
+      <audio id="sx-pop3" class="clip" src=".media/audio/sfx/sfx_005.mp3" data-start="4.26" data-duration="0.36" data-volume="0.6" data-track-index="46"></audio>
+      <audio id="sx-wh3" class="clip" src=".media/audio/sfx/sfx_006.mp3" data-start="6.98" data-duration="0.57" data-volume="0.4" data-track-index="47"></audio>
+      <audio id="sx-click1" class="clip" src=".media/audio/sfx/sfx_005.mp3" data-start="8.43" data-duration="0.36" data-volume="0.5" data-track-index="48"></audio>
+      <audio id="sx-click2" class="clip" src=".media/audio/sfx/sfx_005.mp3" data-start="9.15" data-duration="0.36" data-volume="0.45" data-track-index="49"></audio>
+      <audio id="sx-click3" class="clip" src=".media/audio/sfx/sfx_005.mp3" data-start="9.79" data-duration="0.36" data-volume="0.5" data-track-index="50"></audio>
+      <audio id="sx-wh4" class="clip" src=".media/audio/sfx/sfx_006.mp3" data-start="11.85" data-duration="0.57" data-volume="0.35" data-track-index="51"></audio>
+      <audio id="sx-stamp" class="clip" src=".media/audio/sfx/sfx_002.mp3" data-start="12.62" data-duration="1.2" data-volume="0.55" data-track-index="52"></audio>
+      <audio id="sx-click4" class="clip" src=".media/audio/sfx/sfx_005.mp3" data-start="16.2" data-duration="0.36" data-volume="0.6" data-track-index="53"></audio>
+      <audio id="sx-wh5" class="clip" src=".media/audio/sfx/sfx_006.mp3" data-start="19.47" data-duration="0.57" data-volume="0.4" data-track-index="54"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#fc1-w", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 8.3);
+      tl.to("#fc1-w", { opacity: 0, scale: 0.85, duration: 0.2, ease: "power2.in" }, 10.43);
+      tl.fromTo("#fc2-w", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 16.35);
+      tl.to("#fc2-w", { opacity: 0, scale: 0.85, duration: 0.2, ease: "power2.in" }, 19.33);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

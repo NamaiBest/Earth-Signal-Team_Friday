@@ -6,6 +6,8 @@ Team Friday · NASA Space Apps Challenge 2026 · *Be an Earth System Trend Detec
 
 **Live app: https://earthsignal.vercel.app**
 
+**Demo video:** 28 seconds, source in [`video/`](video/). Submission text: [`docs/SUBMISSION.md`](docs/SUBMISSION.md).
+
 EarthSignal is a map of India's 735 districts that gives a verdict, not just a picture. It tests up to 25 years of NASA satellite and model records for real trends, throws out the false leads, and then shows officials which confirmed problems to act on first.
 
 ## What it does
@@ -116,7 +118,8 @@ python scripts/validate_giovanni.py     # writes web/data/validation.json
 | `web/data/` | Precomputed trends, series, boundaries and sources |
 | `api/brief.js` | Serverless function for the AI brief |
 | `scripts/` | Data pipeline and statistics |
-| `docs/` | Plan, datasets, parameters, validation |
+| `docs/` | Plan, datasets, parameters, validation, submission text |
+| `video/` | HyperFrames source for the demo video |
 
 ## Development timeline
 
@@ -126,6 +129,10 @@ python scripts/validate_giovanni.py     # writes web/data/validation.json
 ## Use of AI
 
 AI tools were used to build this project. Claude (Anthropic) assisted with writing code, the data pipeline and documentation. Google Gemini writes the optional policy brief inside the app, from the page's facts only. The team chose the methods and checked the results against NASA Giovanni. No AI-generated images, video or audio are used.
+
+## Demo video credits
+
+Climate footage: NASA Scientific Visualization Studio (public domain). Music: "Dans le Noir" by SkySonik, CC BY 3.0, via Jamendo.
 
 ## Licence
 

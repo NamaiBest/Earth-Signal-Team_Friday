@@ -1,0 +1,67 @@
+<template>
+  <style>
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Regular.ttf"); font-weight: 400; }
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.ttf"); font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0E1830; font-family: "Outfit", sans-serif; color: #F4EDE0; }
+    .stage { position: absolute; inset: 0; overflow: hidden; }
+    .stage video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    #pf-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,17,36,.86) 0%, rgba(10,17,36,.62) 45%, rgba(10,17,36,.12) 85%), linear-gradient(180deg, rgba(10,17,36,0) 55%, rgba(10,17,36,.7) 100%); }
+    .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,24,48,.10) 0%, rgba(14,24,48,.05) 45%, rgba(14,24,48,.78) 100%); }
+    #pf-q { position: absolute; inset: 0; }
+    .q { position: absolute; left: 140px; top: 330px; width: 1500px; font-weight: 500; font-size: 92px; line-height: 1.08; letter-spacing: -2px; text-shadow: 0 4px 40px rgba(8,14,30,.55); }
+    .q span { display: inline-block; }
+    .q.big { font-weight: 600; font-size: 112px; top: 300px; }
+    .q .hot { color: #FF6B5B; }
+    .word { position: absolute; left: 140px; bottom: 210px; font-weight: 600; font-size: 200px; line-height: 1; letter-spacing: -6px; }
+    .word span { display: inline-block; }
+    .label { position: absolute; left: 146px; bottom: 120px; font-family: "DM Mono", monospace; font-weight: 500; font-size: 30px; letter-spacing: 5px; text-transform: uppercase; color: #F4EDE0; }
+    .label b { color: #FF6B5B; font-weight: 500; }
+    #pf-credit { position: absolute; right: 120px; bottom: 100px; font-family: "DM Mono", monospace; font-size: 26px; letter-spacing: 2px; color: rgba(244,237,224,.72); }
+  </style>
+  <div id="root" data-composition-id="preface" data-width="1920" data-height="1080">
+    <div id="pf-s1" class="stage" data-layout-allow-overflow>
+      <div id="pf-cam1" class="stage"><video id="pf-v1" class="clip" src="assets/clips/c1_heat.mp4" data-start="0" data-duration="1.2" muted playsinline></video></div>
+    </div>
+    <div id="pf-s2" class="stage" data-layout-allow-overflow>
+      <div id="pf-cam2" class="stage"><video id="pf-v2" class="clip" src="assets/clips/c2_smoke.mp4" data-start="1.2" data-duration="1.2" muted playsinline></video></div>
+    </div>
+    <div id="pf-s3" class="stage" data-layout-allow-overflow>
+      <div id="pf-cam3" class="stage"><video id="pf-v3" class="clip" src="assets/clips/c3_fire.mp4" data-start="2.4" data-duration="1.2" muted playsinline></video></div>
+    </div>
+    <div id="pf-scrim"></div>
+      
+      <p id="pf-l1" class="label clip" data-start="0" data-duration="1.2">Global temperature · <b id="pf-year">1952</b></p>
+      
+      <p id="pf-l2" class="label clip" data-start="1.2" data-duration="1.2">Smoke and dust from orbit</p>
+      
+      <p id="pf-l3" class="label clip" data-start="2.4" data-duration="1.2">Fires across South Asia · <b>2023</b></p>
+    <div id="pf-q" class="clip" data-start="0" data-duration="3.6" data-layout-allow-overlap>
+      <p id="pf-qa" class="q"><span id="pf-a0">Everyone’s</span> <span id="pf-a1">talking</span> <span id="pf-a2">about</span> <span id="pf-a3">climate</span> <span id="pf-a4">change,</span></p>
+      <p id="pf-qb" class="q big"><span id="pf-b0">but</span> <span id="pf-b1">what’s</span> <span id="pf-b2">changing</span><br><span id="pf-b3" class="hot">in</span> <span id="pf-b4" class="hot">your</span> <span id="pf-b5" class="hot">district?</span></p>
+    </div>
+    <p id="pf-credit" class="clip" data-start="0" data-duration="3.6">Visualizations: NASA Scientific Visualization Studio</p>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#pf-cam1", { scale: 1.0, x: 0 }, { scale: 1.07, x: -40, duration: 1.2, ease: "none" }, 0);
+    tl.fromTo("#pf-cam2", { scale: 1.12, rotation: -1.5 }, { scale: 1.02, rotation: 0, duration: 1.2, ease: "power2.out" }, 1.2);
+    tl.fromTo("#pf-cam3", { scale: 1.0, x: 0, y: 0 }, { scale: 1.12, x: 100, y: -25, duration: 1.2, ease: "power1.inOut" }, 2.4);
+    // each word lands as it is spoken (times from the voice-over transcript)
+    [0.18, 0.57, 0.98, 1.22, 1.62].forEach((t, i) => tl.fromTo("#pf-a" + i, { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, t));
+    tl.to("#pf-qa", { opacity: 0, filter: "blur(8px)", duration: 0.14, ease: "power2.in" }, 1.92);
+    [2.02, 2.15, 2.44, 2.82, 2.93, 3.14].forEach((t, i) => tl.fromTo("#pf-b" + i, { opacity: 0, y: 22, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.12, ease: "expo.out" }, t));
+    tl.to("#pf-qb", { opacity: 0, filter: "blur(10px)", duration: 0.12, ease: "power2.in" }, 3.47);
+    [["#pf-l1", 0.25], ["#pf-l2", 1.3], ["#pf-l3", 2.5]].forEach(([l, t]) => {
+      tl.fromTo(l, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, t);
+    });
+    const yr = { v: 1952 };
+    tl.to(yr, { v: 2025, duration: 1.1, ease: "none", onUpdate: () => { document.getElementById("pf-year").textContent = Math.round(yr.v); } }, 0.05);
+    tl.fromTo("#pf-credit", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.1);
+    tl.to("#pf-s1", { x: -90, filter: "blur(14px)", duration: 0.12, ease: "power3.in" }, 1.08);
+    tl.fromTo("#pf-s2", { x: 110, filter: "blur(14px)" }, { x: 0, filter: "blur(0px)", duration: 0.16, ease: "expo.out" }, 1.2);
+    tl.to("#pf-s2", { x: -90, filter: "blur(14px)", duration: 0.12, ease: "power3.in" }, 2.28);
+    tl.fromTo("#pf-s3", { x: 110, filter: "blur(14px)" }, { x: 0, filter: "blur(0px)", duration: 0.16, ease: "expo.out" }, 2.4);
+    tl.to("#pf-s3", { opacity: 0.2, filter: "blur(10px)", duration: 0.2, ease: "power2.in" }, 3.4);
+    window.__timelines["preface"] = tl;
+  </script>
+</template>

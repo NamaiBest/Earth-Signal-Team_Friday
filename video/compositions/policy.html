@@ -1,0 +1,67 @@
+<template>
+  <style>
+    @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.ttf"); font-weight: 500; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0E1830; font-family: "Outfit", sans-serif; color: #F4EDE0; }
+    .cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+    .cam img.shot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .chip { position: absolute; padding: 14px 26px; border-radius: 999px; white-space: nowrap; font-family: "DM Mono", monospace; font-weight: 500; font-size: 28px; letter-spacing: 3px; color: #F4EDE0;
+      background: rgba(10,17,36,.86); border: 1px solid rgba(244,237,224,.3); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+    .chip.hot { color: #FF8B7D; border-color: rgba(255,107,91,.65); }
+    .hl { position: absolute; border: 4px solid #FF6B5B; border-radius: 16px; box-shadow: 0 0 0 6px rgba(255,107,91,.18), 0 0 40px rgba(255,107,91,.45); opacity: 0; }
+    .cursor { position: absolute; left: 0; top: 0; width: 44px; height: 54px; }
+  </style>
+  <div id="root" data-composition-id="policy" data-width="1920" data-height="1080">
+    <img id="po-detect" class="shot" style="position:absolute;left:0;top:0;width:1920px;height:1080px" src="assets/app/q_cal.jpg" alt="Detect view">
+    <div id="po-cam1" class="cam" data-layout-allow-overflow>
+      <img class="shot" src="assets/app/q_pol.jpg" alt="Policy workspace for Delhi">
+      <div id="po-mask" style="position:absolute;left:14px;top:214px;width:336px;height:852px;border-radius:0 0 20px 20px;background:rgb(29,44,75)"></div>
+      <div id="po-input" style="position:absolute;left:31px;top:169px;width:302px;height:35px;border-radius:10px;background:rgb(42,55,87);font-size:17px;line-height:35px;padding-left:12px;color:#F4EDE0;white-space:nowrap;overflow:hidden"><span id="po-typed"></span><span id="po-caret" style="display:inline-block;width:2px;height:20px;background:#F4EDE0;vertical-align:middle;margin-left:2px"></span></div>
+      <div id="po-i1" class="hl" style="left:25px;top:579px;width:314px;height:111px"></div>
+      <div id="po-i2" class="hl" style="left:25px;top:690px;width:314px;height:111px"></div>
+      <div id="po-i3" class="hl" style="left:25px;top:801px;width:314px;height:111px"></div>
+    </div>
+    <div id="po-cam2" class="cam" data-layout-allow-overflow><img class="shot" src="assets/app/m_pol_ai.jpg" alt="AI brief for Delhi with cited facts"></div>
+    <div id="po-cam3" class="cam" data-layout-allow-overflow>
+      <img class="shot" src="assets/app/q_hit.jpg" alt="Rohtak raised and highlighted on the map">
+      <div id="po-p1" class="hl" style="left:858px;top:438px;width:200px;height:200px;border-radius:50%"></div>
+      <div id="po-p2" class="hl" style="left:858px;top:438px;width:200px;height:200px;border-radius:50%"></div>
+    </div>
+    <p id="po-chip1" data-hidden class="chip hot" style="left:760px;top:70px">CONFIRMED PROBLEMS · RANKED BY SEVERITY</p>
+    <p id="po-chip2" data-hidden class="chip" style="left:760px;top:70px">AI BRIEF · EVERY FACT CITED, EVERY NUMBER CHECKED</p>
+    <p id="po-chip3" data-hidden class="chip hot" style="left:120px;top:70px">WHERE TO ACT · FIRES RISING IN ROHTAK, +69% A DECADE</p>
+    <svg class="cursor" id="po-cur" viewBox="0 0 22 27" width="44" height="54"><path d="M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.5 L18.5 15.5 Z" fill="#F4EDE0" stroke="#0E1830" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const at = (cx, cy, s) => { const k = (v, h, d) => Math.min(Math.max(v, h / s), d - h / s); cx = k(cx, 960, 1920); cy = k(cy, 540, 1080); return { x: 960 - cx * s, y: 540 - cy * s, scale: s }; };
+    // click the Policy tab; the workspace opens
+    tl.fromTo("#po-detect", { opacity: 1 }, { opacity: 1, duration: 0.01 }, 0);
+    tl.fromTo("#po-cur", { x: 1100, y: 640, scale: 1, opacity: 1 }, { x: 984, y: 26, duration: 0.5, ease: "power3.inOut" }, 0);
+    tl.to("#po-cur", { scale: 0.82, duration: 0.07, ease: "power2.in" }, 0.52);
+    tl.to("#po-cur", { scale: 1, duration: 0.12, ease: "power2.out" }, 0.59);
+    tl.fromTo("#po-cam1", { opacity: 0, ...at(960, 540, 1.04) }, { opacity: 1, ...at(960, 540, 1), duration: 0.3, ease: "expo.out" }, 0.6);
+    // search for Delhi and let the problems load
+    tl.to("#po-cur", { x: 150, y: 176, duration: 0.45, ease: "power3.inOut" }, 0.75);
+    tl.to("#po-cur", { scale: 0.82, duration: 0.07 }, 1.2);
+    tl.to("#po-cur", { scale: 1, opacity: 0, duration: 0.15 }, 1.27);
+    const word = "Delhi", typed = { n: 0 };
+    tl.to(typed, { n: 5, duration: 0.5, ease: "none", onUpdate: () => { document.getElementById("po-typed").textContent = word.slice(0, Math.round(typed.n)); } }, 1.3);
+    tl.fromTo("#po-input", { opacity: 1 }, { opacity: 0, duration: 0.15 }, 1.95);
+    tl.fromTo("#po-mask", { opacity: 1 }, { opacity: 0, duration: 0.35, ease: "power2.out" }, 1.98);
+    // "ranks the confirmed problems in your area"
+    tl.to("#po-cam1", { ...at(182, 745, 1.7), duration: 0.55, ease: "power3.inOut" }, 2.3);
+    ["#po-i1", "#po-i2", "#po-i3"].forEach((s, i) => tl.fromTo(s, { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.25, ease: "expo.out" }, 2.6 + i * 0.12));
+    tl.fromTo("#po-chip1", { opacity: 0, y: -14, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.25, ease: "expo.out" }, 1.4);
+    // "with an AI brief"
+    tl.to("#po-chip1", { opacity: 0, filter: "blur(6px)", duration: 0.12, ease: "power2.in" }, 3.12);
+    tl.fromTo("#po-cam2", { opacity: 0, ...at(182, 470, 1.78), filter: "blur(10px)" }, { opacity: 1, ...at(182, 470, 1.7), filter: "blur(0px)", duration: 0.25, ease: "expo.out" }, 3.2);
+    tl.fromTo("#po-chip2", { opacity: 0, y: -14, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.25, ease: "expo.out" }, 3.3);
+    // "so the government knows exactly where to act": swoop onto Rohtak, the boundary pulses
+    tl.to("#po-chip2", { opacity: 0, filter: "blur(6px)", duration: 0.12, ease: "power2.in" }, 3.95);
+    tl.fromTo("#po-cam3", { opacity: 0, ...at(958, 538, 1.9), filter: "blur(12px)" }, { opacity: 1, ...at(790, 540, 1.36), filter: "blur(0px)", duration: 0.9, ease: "expo.out" }, 4.0);
+    tl.fromTo("#po-p1", { opacity: 0.95, scale: 0.5 }, { opacity: 0, scale: 2.4, duration: 1.0, ease: "power2.out" }, 4.6);
+    tl.fromTo("#po-p2", { opacity: 0.95, scale: 0.5 }, { opacity: 0, scale: 2.4, duration: 1.0, ease: "power2.out" }, 5.15);
+    tl.fromTo("#po-chip3", { opacity: 0, y: -14, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.25, ease: "expo.out" }, 4.5);
+    window.__timelines["policy"] = tl;
+  </script>
+</template>
